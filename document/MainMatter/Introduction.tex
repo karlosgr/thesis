@@ -69,23 +69,25 @@ la interacción y la extracción de datos de los complejos cuadros tabulares inc
 
 \subsection*{Objetivos}
 
-El objetivo general de este trabajo es diseñar una herramienta con una estructura multiagente basados en LLMs\@. A partir de un problema de optimización descrito en lenguaje natural
-la herramienta debe extraer la información relevante del problema: objetivos, restricciones, variables, etc. Usando esa información para modelar formalmente el problema y resolverlo de forma automática.
-Integrado lo anterior con un sistema de retroalimentación que le permita a la herramienta rectificar errores, mejorando la correctitud de las soluciones finales. Para lograr el objetivo general se proponen los
-siguientes objetivos específicos:
-
+El objetivo general de este trabajo es el diseño e implementación de una propuesta de solución al problema planteado.
+Una solución que no dependa de conocimientos en optimización por parte del usuario, y que tampoco necesite que el problema esté modalado formalmente para resolverlo.
+Por lo tanto se propone como objetivo que la solución trabaje con la forma más natural y simple de un problema: su descripción en lenguaje natural.
+La propuesta de solución debe ser capaz de extraer la información relevante a partir de la descripción de un problema: objetivos, restricciones, variables, etc. Usando esa información para modelar formalmente el problema y resolverlo de forma automática.
+Para cumplir con este objetivo general, se plantean los siguientes objetivos específicos:
 \begin{itemize}
-    \item Realizar un análisis sobre el estado del arte enfocado en la solución de problemas de optimización a partir de lenguaje natural.
+    \item Realizar un análisis sobre el estado del arte enfocado en la modelación y solución de problemas de optimización a partir de lenguaje natural.
     \item Analizar las distintas tecnologías, herramientas y lenguajes de modelado utilizados para resolver los problemas de optimización actuales.
-    \item El diseño y la implementación de la arquitectura multiagente propuesta.
-    \item El diseño de una interfaz visual para la interacción del cliente.
-    \item La implementación de un sistema de manejo y prevención de errores.
-    \item Evaluar la efectividad de la herramienta propuesta, y su rendimiento comparado a otras soluciones.
+    \item El diseño de una interfaz visual para que el usuario pueda interactuar de forma sencilla con la solución implementada.
+    \item El diseño de un mecanismo que ayude a suplir la falta de experiencia de los usuarios en problemas de optimización, guíandolos durante la descripción del problema por parte de cada usuario.
+    \item La implementación de un sistema de comprobación y validación de la solución propuesta, que permita asegurar la calidad de los resultados obtenidos.
+    \item Evaluar la efectividad de la propuesta, y su rendimiento comparado a otras soluciones similares.
 \end{itemize}
 
 
 \subsection*{Estructura de la tesis}
-El resto del trabajo de tesis está estructurado de la siguiente manera. En el Capítulo~\ref{chapter:state-of-the-art} se realiza una comparación de los diferentes enfoques utilizados para resolver problemas de optimización
-a partir de lenguaje natural. Se analizan las principales técnicas de cada enfoque para cada objetivo específico del problema y se muestran las principales dificultades existentes en este campo. Luego, en el Capítulo~\ref{chapter:proposal}
-se muestra la arquitectura propuesta, incluyendo una análisis de las estrategias y técnicas utilizadas. En el Capítulo ~\ref{chapter:implementation} se exponen los resultados alcanzados por el modelo con respecto a otros trabajos similares, destacando
-como se afecta el desempeño a partir de las las diferentes técnicas utilizadas. Por último se presentan las conclusiones y recomendaciones futuras.
+El resto del trabajo de tesis está estructurado de la siguiente manera.
+En el Capítulo~\ref{chapter:state-of-the-art} se realiza una revisión de la literatura, analizando los diferentes enfoques y técnicas utilizados para modelar y resolver problemas de optimización a partir de descripciones en lenguaje natural.
+A continuación, en el Capítulo~\ref{chapter:proposal} se presenta la arquitectura de la solución desarrollada, detallando el sistema multi-agente propuesto y las estrategias que sigue para interpretar y resolver cada problema.
+El Capítulo~\ref{chapter:implementation} profundiza en los aspectos técnicos de la solución, describiendo la infraestructura, los entornos de programación, las herramientas y los modelos de lenguaje que se emplearon para su construcción.
+Posteriormente, en el Capítulo~\ref{chapter:experiments} se describe el diseño experimental, los conjuntos de datos utilizados para la evaluación y se presentan y discuten los resultados obtenidos, comparando el rendimiento de la propuesta con otros trabajos del área.
+Finalmente, se exponen las Conclusiones que resumen los hallazgos del trabajo y las Recomendaciones para futuras líneas de investigación.

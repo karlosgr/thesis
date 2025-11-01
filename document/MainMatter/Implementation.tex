@@ -1,3 +1,94 @@
-\chapter{Detalles de Implementación y Experimentos}\label{chapter:implementation}
+\chapter{Detalles de Implementación}\label{chapter:implementation}
 
 
+\section{Infraestructura}
+Para la solución propuesta se implementó un servidor usando \textit{FastApi}, un framework que permite crear aplicaciones web de forma sencilla y rápida usando \textit{Python}.
+Este servidor se montó en un contenedor de \textit{Docker} junto a los entornos y paquetes necesarios para que la aplicación funcione.
+Garantizando así la portabilidad y facilidad de despliegue de la solución.
+
+\subsection{Entornos de Julia}
+Como lenguaje de programación para ejecutar los modelos generados se escogió Julia. Un lenguaje de programación de alto rendimiento diseñado para la computación técnica y científica.
+Se escogió este lenguaje por las siguientes ventajas que ofrece:
+\begin{itemize}
+    \item Posee un paquete de modelado de optimización llamado \textit{JuMP}, con una sintaxis declarativa que permiten definir variables y restricciones muy similar a una modelación teórica.
+    \item Integración sencilla con numerosas herramientas de optimización y soluciona-dores (Ipopt, NLopt, Cbc, HiGHS, SCIP, etc) a través de un paquete llamado \textit{MathOptInterface}.
+    \item Compilación Just-In-Time (JIT) sobre LLVM, que proporciona velocidad comparable a C/Fortran en fases de solución y en evaluaciones repetidas de modelos grandes.
+    \item Diferenciación automática integrada (ForwardDiff, ReverseDiff), para obtener gradientes y Hessianas exactas en problemas no lineales sin código manual adicional.
+\end{itemize}
+Dada la amplia gama de problemas que la solución propuesta es capaz de abordar, se ha implementado una infraestructura modular basada en cuatro entornos de ejecución de Julia independientes.
+El propósito de esta segmentación es aislar las bibliotecas y dependencias específicas para cada categoría de problema, una práctica recomendada para prevenir conflictos e incompatibilidades entre paquetes de software.
+Estos entornos se han especializado de la siguiente manera:
+\begin{itemize}
+    \item Programación Lineal y Entera Mixta: Un entorno dedicado a problemas LP y MILP que incluye bibliotecas y solvers como \textit{HiGHS} y \textit{Cbc}.
+    \item Programación no Lineal y Entera Mixta: Un segundo entorno para problemas NLP y MINLP, equipado con herramientas como \textit{Ipopt}, \textit{NLopt} y \textit{SCIP}.
+    \item Satisfacción de Restricciones: Un tercer entorno especializado en problemas CS que contiene la biblioteca \textit{ConstraintSolver}.
+    \item Metaheurísticas: Finalmente, un cuarto entorno que agrupa un conjunto de herramientas como \textit{BlackBoxOptim} y \textit{Metaheuristics} basadas en metaheurísticas. Este último está diseñado para la resolución aproximada y eficiente de problemas de alta complejidad, donde se prioriza la rapidez en la obtención de una solución de alta calidad por sobre la garantía de optimalidad.
+\end{itemize}
+
+No se incluyeron otras herramientas o paquetes como \textit{Gurobi} o \textit{CPLEX} porque a pesar de ser más eficientes y con mayor rendimiento, son herramientas propietarias que requieren licencias de pago.
+
+\subsection{Entorno de Python}
+Como se mencionó anteriormente, el servidor principal de la aplicación está desarrollado en \textit{Python} utilizando el framework \textit{FastApi}.
+Pero además, en la aplicación se utilizan otras bibliotecas de Python que son imprescindibles para la solución propuesta.
+Entre ellas se encuentran: \textit{google-genai} que es la encargada de interactuar con los modelos de lenguaje y \textit{or-tools}.
+Esta última es una biblioteca desarrollada por Google, que proporciona herramientas para resolver problemas de optimización complejos específicos como enrutamiento y planificación.
+Se añadió al proyecto como una alternativa para resolver este conjunto de problemas por vías no exactas de manera eficiente.
+
+\subsection{Interfaz gráfica}
+Como parte de la solución se desarrolló una interfaz gráfica web utilizando el framework \textit{Next.js}.
+Esto permite al usuario interactuar con la aplicación a través de una interfaz tipo chat, que facilita el intercambio de información necesario para obtener la definición del problema de optimización.
+
+\subsection{Modelos de lenguaje}
+Como núcleo de cada agente en la implementación se emplearon dos Grandes Modelos de Lenguaje (LLM): \textit{Gemini 2.5 Flash} y \textit{Gemini 2.5 Pro}.
+La selección de estos modelos, desarrollados por Google, se fundamentó en un criterio pragmático: la disponibilidad de una Interfaz de Programación de Aplicaciones (API) con un nivel de acceso gratuito, lo cual fue un factor determinante para la viabilidad del proyecto.
+
+
+
+\section{Implementación de la solución}
+Para la implementación general de cada agente se optó por no realizar \textit{fine-tuning} sobre algún modelo de lenguaje para entrenarlo específicamente en modelar problemas de optimización, no solo debido al coste en recursos computacionales para entrenar los modelos, sino en su mayor parte, por la falta de datos.
+Debido a que casi no existen bases de datos que contengan descripciones de problemas de optimización junto a su modelación matemática o código correspondiente.
+Y las pocas que se encontraron solo contenían una modelación del problema en \textit{GurobiPy}, un lenguaje de dominio específico de \textit{Python} que se integra con la herramienta \textit{Gurobi}, que como se mencionó anteriormente, requiere una licencia de pago.
+En consecuencia se optó por la variante de usar \textit{in-context learning} para trabajar con los modelos de lenguaje.
+Esta decisión se apoya en el uso y efectividad de esta técnica en algunos trabajos mencionados en el estado del arte.
+
+
+
+\subsection{Modelación}
+La modelación de los problemas en formato \textit{FNP} se llevó a cabo mediante el uso de una secuencia de \textit{prompts} diseñados para guiar al modelo en el proceso de estructuración.
+Con el objetivo de potenciar el rendimiento del LLM en la generación del modelo de optimización, se implementó la técnica de \textit{few-shot prompting}.
+Se le suministró al modelo múltiples ejemplos de descripciones de problemas de optimización, junto con su correspondiente modelación en formato \textit{FNP}.
+Adicionalmente, se proporcionaron explicaciones específicas sobre la forma de modelar las restricciones especiales.
+Las restricciones especiales que la solución está habilitada para modelar son funciones predefinidas y limitadas, incluyendo restricciones como \textit{all\_different} (todas las variables deben ser diferentes), \textit{at\_least} (deben existir al menos $k$ variables con valor $v$) y \textit{exact} (exactamente $k$ variables deben tener el valor $v$).
+
+El modelo del problema generado es sometido a una revisión mediante un \textit{prompt} reflexivo, el cual habilita al sistema para identificar y corregir posibles errores en la modelación final.
+Se optó por incorporar esta técnica basándose en su utilización en trabajos previos citados en el estado del arte.
+No obstante, a diferencia de algunas de esas implementaciones, que aplican \textit{prompts} reflexivos de manera iterativa en cada sección de la modelación (variables, restricciones, función objetivo, etc.), en la presente solución se decidió utilizar un único \textit{prompt} reflexivo al culminar el proceso completo de modelación.
+Esta elección fue motivada por la necesidad de mitigar el considerable aumento del coste computacional que implica el uso de múltiples \textit{prompts} reflexivos por cada problema.
+
+Como método de validación del modelo generado, solo se aplica una validación sintáctica, se verifica que todas las piezas importantes de la modelación estén presentes como llaves en el archivo \textit{JSON} y se verifica que se pueda parsear el archivo.
+
+
+\subsection{Generación de código}
+A diferencia de \textit{Python}, un lenguaje de programación muy utilizado y que con el cúal se han entrenado a los LLMs ampliamente, lenguajes como \textit{Julia}, más específicos y menos populares, tienden a ser más complicados de generar para los modelos de lenguaje.
+Con una mayor probabilidad de que alucinen y cometan errores sintácticos o semánticos al generar código en estos lenguajes.
+Para mitigar estos problemas al escoger \textit{Julia} como lenguaje de programación se utilizaron dos estrategias fundamentales:
+\begin{itemize}
+    \item Se diseñaron diferentes \textit{prompts}, cada uno destinado a una sección de la modelación por separado (variables, parámetros, conjuntos, restricciones y objetivo).
+          Estos \textit{prompts} eran usados por el agente de generación de código para interactuar con el modelo de lenguaje y generar un programa con mayor correctitud.
+          Cada \textit{prompt} contiene una descripción de la sintaxis específica para esa sección del modelo, así como varios ejemplos del modelo asociado al código resultante.
+    \item También se diseñaron \textit{prompts} para resolver cada tipo de problema de optimización, donde se especificaba qué herramientas usar, sintaxis de cada paquete específico con sus configuraciones, así como códigos y sintaxis específicas de cada tipo de problema.
+          Por ejemplo: la sintaxis para las restricciones en problemas no lineales era diferente a la utilizada en problemas lineales, así como las herramientas utilizadas y las configuraciones de dichas herramientas.
+\end{itemize}
+
+Todo lo anterior se hizo con el objetivo de dar las instrucciones al modelo de la manera más específica posible, con la intención de minimizar la libertad del modelo para generar código, reduciendo así la probabilidad de alucinaciones.
+A esto se le suma el uso de la técnica de \textit{prompting} \textit{few-shot} en cada instrucción suministrada al modelo en cuanto a tareas de generación de código.
+
+Para el correcto funcionamiento de esta sección del flujo de solución es fundamental que el modelo genere un código que cumpla una serie de instrucciones específicas.
+Para ello se diseñaron una serie de \textit{prompts} que contienen la indicaciones necesarias para que el modelo genere un código que cumpla con los siguientes requisitos:
+\begin{itemize}
+    \item El código debe incluir una instrucción que limite el tiempo que puede ejecutarse la herramienta o solucionador, evitando que el programa pueda ejecutarse indefinidamente, o que sobrepase el límite impuesto por el usuario.
+    \item Debe además evitar que la herramienta utilizada imprima cualquier información en consola, ya que esto podría interferir con la salida esperada del programa.
+    \item Las respuestas del problema obtenidas al ejecutar el programa deben imprimirse en consola en formato \textit{JSON} para que el agente pueda capturar ese resultado e interpretarlo.
+    \item En el caso específico de que el problema sea MINLP y la función objetivo sea no lineal se debe usar una técnica llamada reformulación epígrafo o hipógrafo. Debido a que la única herramienta capaz de resolver este tipo de problemas es \textit{SCIP}, que soporta restricciones no lineales pero no funciones objetivo no lineales.
+          Por lo tanto se crea una nueva función objetivo lineal y se restringe con la anterior función objetivo no lineal. Y se optimiza en el sentido contrario a la optimización original.
+\end{itemize}

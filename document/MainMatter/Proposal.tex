@@ -1,85 +1,385 @@
 \chapter{Propuesta}\label{chapter:proposal}
-En este trabajo se presenta una propuesta de aplicación para resolver problemas de optimización a partir de una interfaz lingüística.
-Se emplea una arquitectura multi-agente como las que se mostraron en el capítulo anterior para procesar el lenguaje natural, y a partir de este modelar el problema.
-Esta arquitectura utiliza un sistema centralizado, donde existe un agente central que delega tareas específicas a otros agentes, como se muestra en la figura \ref{fig: architecture}.
+En este capítulo se presenta la aplicación propuesta para resolver problemas de optimización a partir de una interfaz lingüística.
+Permitiendo a un usuario común modelar y resolver problemas prácticos, a partir de una simple descripción en lenguaje natural.
+En base al estudio bibliográfico realizado se optó por una solución que combine modelos de lenguaje junto a herramientas externas.
+Debido a que esta estrategia es la más utilizada en el estado del arte, proporcionando el mejor rendimiento en cuanto a resolver problemas de optimización.
+
+
+También se proponen los siguientes pasos para el siguiente proceso de solución de un problema de optimización:
+\begin{itemize}
+  \item Extracción y refinamiento de la descripción del problema a partir de la intera-cción con el usuario.
+  \item Modelación del problema.
+  \item Generación de código a partir del modelo.
+  \item Ejecución del código y obtención de resultados.
+\end{itemize}
+Además de los pasos de modelación, generación de código y ejecución que son usados ampliamente en las soluciones presentadas en el estado del arte, se incluye un paso adicional, donde se interactúa con el usuario para obtener una descripción del problema.
+Este paso está diseñado para evitar en su mayoría los problemas de ambigüedad e información incompleta en la descripción del problema, que podrían presentarse debido a la inexperiencia del usuario.
+
+
+La solución emplea una arquitectura multi-agente como las presentadas en algunos trabajos en el capítulo anterior.
+Se utiliza un sistema centralizado, donde existe un agente central o supervisor como núcleo de la aplicación, que se encarga de controlar todo el proceso de solución del problema.
+Este agente tiene la capacidad de delegar tareas específicas a otros agentes y validar la correctitud de sus respuestas. Este proceso se ilustra de forma general en la figura~\ref{fig: architecture}.
 
 
 \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{architecture.png}
-    \caption{Arquitectura propuesta}
-    \label{fig: architecture}
-
+  \centering
+  \makebox[\textwidth][c]{
+    \includegraphics[width=1.2\textwidth]{proposal.png}
+  }
+  \caption{Arquitectura propuesta}
+  \label{fig: architecture}
 \end{figure}
 
-El diseño incluye varios métodos para validar y manejar errores, con el objetivo de mitigar las alucinaciones cometidos por los modelos de lenguaje. Entre ellos podemos mencionar la retroalimentación usando los errores en tiempo de ejecución, para corregir el código generado, o el análisis reflexivo de la modelación del problema.
-A partir de las opciones de modelación que se exponen en el estado del arte, se generó una estructura de modelado formal pero que permite mantener un vínculo de cada cláusula con su contexto, así como almacenar metadatos del problema. Otra de las carácteristicas que posee esta propuesta es la posibilidad de manejar distintos tipos de problemas de optimización intregando distintas herramientas y solucionadores en el entorno.
-Esto permite tomar diferentes cursos de acciones en base a si es un problema de programación lineal, programación entera o satisfacción de restricciones. Un detalle a tener en cuenta es que se tiene en cuenta un tiempo límite establecido por el usuario para resolver el problema. Este límite también modifica la estrategia de solución del problema, influyendo en si se utilzan enfoques no exactos pero más rápidos para resolver el problema, en caso de que el margen de tiempo sea pequeño. O en caso de que no sea un problema, utilizar métodos exactos que garantizen la mejor solución.
+El diseño de la solución inlcuye la posibilidad de resolver una amplia variedad de problemas de optimización, incluyendo:
+\begin{itemize}
+  \item Problemas de Programación Lineal (LP)
+  \item Problemas de Programación Lineal Entera Mixta (MILP)
+  \item Problemas de Programación No Lineal (NLP)
+  \item Problemas de Programación No Lineal Entera Mixta (MINLP)
+  \item Problemas de Satisfacción de Restricciones (CSP)
+\end{itemize}
+
+También se incluye una vía alternativa para resolver problemas usando metaheurísticas y métodos aproximados.
+Permitiendo así la posibilidad de tratar problemas complejos que poseen un gran número de variables con resultados y tiempos de ejecución aceptables.
 
 
-\subsection*{Agente Conversacional}
-La primera capa de la solución propuesta es un agente que se encarga de hacer de interfaz lingüística con el usuario. Con este agente se intenta suplir la falta de conocimiento o experticia de los usuarios, al intentar solucionar problemas prácticos.
-La principal tarea de este agente es analizar el problema planteado por el usuario, y valorar potencial información faltante. Si considera que podría no haberse proporcionado algún dato escencial referente al problema, se encarga de formular una serie de preguntas
-para que el usuario conteste. Esto permite que el usuario pueda proveer la información necesaria para resolver el problema, sin necesidad de conocer cúal información es necesaria o no.
-Una vez recopilada toda la información pertinente, el agente la consolida en una descripción estructurada en lenguaje natural. A continuación, esta descripción es sometida a un proceso de refinamiento, donde se instruye al modelo, mediante el uso de ejemplos (few-shot prompting),
-para que transforme el texto e incremente su nivel de explicitud. Este proceso incluye la estandarización de la terminología, la inserción de anotaciones sobre la naturaleza de las variables y la conversión de expresiones coloquiales a su equivalente lógico-matemático (p. ej., transformar
-“x no puede superar y” en “x es menor o igual que y”). Como parte de esta investigación, se evaluará la influencia de esta transformación en la eficacia del sistema para modelar correctamente los problemas, buscando así validar la hipótesis de que un mayor grado de explicitud en la formulación
-del problema potencia significativamente la capacidad de razonamiento de los Grandes Modelos de Lenguaje.
-
-\subsection*{Modelación}
-Para modelar el problema de optimización se optó por una estructura específica, utilizar un formato \textit{JSON}, presentada como \textbf{FNP}.
-Se utilizó como base \textit{Structured Natural Language Optimization}(\textit{SNOP}) \cite{ahmaditeshnizi2023optimusoptimizationmodelingusing}, un formato usado para almacenar problemas de optimización de manera estructurada.
-Esta estructura permite almacenar metadatos del problema, así como mantener una relación entre la formalidad del problema y su contexto.
-Al utilizar un formato \textit{JSON}, se facilita el manejo de esta modelación por lenguajes de programación así como por los modelos de lenguaje.
-A continuación se muestran los campos y detalles de la estructura propuesta:
+\section{Modelación}
+Para modelar los problemas de optimización se utilizó una estructura específica montada sobre un formato \textit{JSON}.
+Esta estructura se denominó \textit{FNP} y se diseñó combinando conceptos como la modelación de los cinco elementos (\cite{jiang2025llmopt}) y modelación sobre estructuras formales como el formato \textit{JSON}.
+A continuación se muestra una descripción de toda la información que se extrae para generar un modelo a partir de la descripción de un problema de optimización en lenguaje natural:
 
 \begin{itemize}
-    \item \textbf{Tipo de problema:} Califica el problema según en LP (programación lineal), MILP (programación lineal entera mixta), NLP (programación no lineal), MINLP (programación no lineal entera mixta), CS (satisfacción de restricciones).
-    \item \textbf{Tipo específico:} Este campos se utiliza para clasificar problemas más complejos y específicos como planificación, enrutamiento, etc. Para el resto de problemas este campo estará vacío.
-    \item \textbf{Tiempo:} El tiempo límite para resolver el problema especificado por el usuario.
-    \item \textbf{Conjuntos:} Aquí se almacenan conjuntos de elementos, sobre los cuales es posible iterar en el problema, por ejemplo: las diferentes ciudades de un país, los diferentes tipos de un producto, etc.
-    \item \textbf{Parámetros:} Los parámetros de un problema son datos estáticos relevantes para la modelación de este, pueden ser datos únicos o datos que dependan de elementos de un conjunto.
-    \item \textbf{Variables:} En este campo se modelan todo el conjunto de variables del problema. De cada variable se almacena el tipo(entera o continua), el dominio de la variable. También es posible modelar una variable por cada elemento de un conjunto de forma iterativao escalarlo creando una variable por cada par de elementos de conjuntos distintos, o aún mas. Esto es posible usando un campo llamado \textit{index} dentro de la variable, que denota el o los conjuntos sobre los que se deben iterar.
-    \item \textbf{Restricciones:} De cada restricción se almacenan su tipo(linear o no linear) y su formulación matemática, que referencia a las variables y parámetros antes declarados.
+  \item \textbf{Tipo de problema:} Califica el problema en LP, MILP, NLP, MINLP, CS\@.
+  \item \textbf{Tipo específico:} Este campo se utiliza para clasificar problemas específicos que tienden a presentar mayor complejidad como problemas de planificación, o de enrutamiento, etc.
+  \item \textbf{Tiempo:} El tiempo límite para resolver el problema especificado por el usuario.
+  \item \textbf{Conjuntos:} Los conjuntos de un problema de optimización son agrupaciones de elementos relacionados, que son relevantes para la formulación de variables y restricciones (ej: las diferentes ciudades de un país, los diferentes tipos de un producto, etc).
+  \item \textbf{Parámetros:} Los parámetros de un problema son datos estáticos relevantes para la modelación de este, pueden ser datos únicos o datos que dependan de elementos de un conjunto.
+  \item \textbf{Variables:} En este campo se modelan todo el conjunto de variables del problema. De cada variable se almacena el tipo (entera o continua), el dominio de la variable y su contexto en el problema, es decir que representa esa variable. También es posible modelar una variable por cada elemento de un conjunto, o escalarlo y modelar una variable por cada combinación de elementos de dos o más conjuntos distintos.
+  \item \textbf{Restricciones:} De cada restricción se almacenan su tipo (linear o no linear), su contexto en el problema y su formulación matemática. Esta formulación matemática debe referenciar a las variables y parámetros antes declarados en el modelo del problema.
+  \item \textbf{Restricciones especiales:} Algunas restricciones presentan una formulación un poco más compleja, ya que no entran en las clasificaciones clásicas como lineares o no lineales (ej: todas las variables deben ser diferentes, o deben haber al menos n variables con valor k, etc). Estas restricciones especiales se modelan en este campo.
+  \item \textbf{Función objetivo:} En este campo se almacena la función objetivo del problema, su sentido (maximización o minimización), su tipo (linear o no linear), su contexto en el problema y su formulación matemática.
+\end{itemize}
+
+Se escogió esta vía para modelar los problemas de optimización por varias razones.
+Primero, como se mencionó anteriormente, la formulación de los cinco elementos facilita a los modelos de lenguaje el entendimiento del problema, mejorando su efectividad al trabajar con problemas de optimización.
+Esta formulación permite no solo guardar metadatos del problema, sino que también combina en una misma modelación las expresiones matemáticas con el contexto de cada componente del modelo.
+Usar el formato \textit{JSON} permite modelar formalmente el problema, tal que no solo los modelos pueden entender y analizar el problema, sino que también se puede validar la estructura del modelo y sus componentes de forma automática, así como extraer información del problema como su tipo, el tiempo límite, el tamaño del problema teniendo en cuenta la cantidad de variables y restricciones.
+
+
+\subsection{Ejemplo de Modelación}
+A continuación se muestran dos ejemplos de modelos \textit{FNP} generados a partir de descripciones en lenguaje natural de problemas de optimización.
+\paragraph{Problema 1:}
+
+Glueco has 5 different production lines for glue. He needs to assign workers to each production line.
+On production line 1, each worker produces 20 units of glue 1, 30 units of glue 2, and 40 units of glue 3 during a hour.
+On production line 2, each worker produces 50 units of glue 1, 35 units of glue 2, and 45 units of glue 3 during a hour.
+On production line 3, each worker produces 30 units of glue 1, 40 units of glue 2, and 50 units of glue 3 during a hour.
+On production line 4, each worker produces 40 units of glue 1, 45 units of glue 2, and 50 units of glue 3 during a hour.
+On production line 5, each worker produces 25 units of glue 1, 35 units of glue 2, and 45 units of glue 3 during a hour.
+Now, Glueco needs to produce at least 120 units of glue 1, at least 150 units of glue 2, and at least 200 units of glue 3.
+The five production lines can only be opened or closed at the same time. Please determine the minimum time to meet the weekly demand.
+There are total 80 workers available. Each line can be utilized by up to 20 workers at a time. Glueco produces 3 types of glue on the 5 production lines.
+
+
+
+\paragraph{Problema 2:}
+
+There are six cities (cities 1-6) in Kilroy County. The county must determine where to build fire stations. The county wants to build the minimum number of fire stations needed to ensure that at least one fire station is within 15 minutes (driving time) of each city. The times (in minutes) required to drive between the cities in Kilroy County are shown in the following Table. Formulate a linear problem that will tell Kilroy how many fire stations should be built and where they should be located.
+Table (Time Required to Travel between Cities in Kilroy County):
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{ccccccc}
+    \toprule
+    \textbf{From / To} & \textbf{City 1} & \textbf{City 2} & \textbf{City 3} & \textbf{City 4} & \textbf{City 5} & \textbf{City 6} \\
+    \midrule
+    \textbf{City 1}    & 0               & 10              & 20              & 30              & 30              & 20              \\
+    \midrule
+    \textbf{City 2}    & 10              & 0               & 25              & 35              & 20              & 10              \\
+    \midrule
+    \textbf{City 3}    & 20              & 25              & 0               & 15              & 30              & 20              \\
+    \midrule
+    \textbf{City 4}    & 30              & 35              & 15              & 0               & 15              & 25              \\
+    \midrule
+    \textbf{City 5}    & 30              & 20              & 30              & 15              & 0               & 14              \\
+    \midrule
+    \textbf{City 6}    & 20              & 10              & 20              & 25              & 14              & 0               \\
+    \bottomrule
+  \end{tabular}
+  \caption{Time Required to Travel between Cities in Kilroy County}
+  \label{tab:travel-times}
+
+\end{table}
+
+
+\subsubsection*{FNP 1:}
+
+
+\begin{lstlisting}[language=json, caption={Modelo FNP del problema 1.}, label={lst:fnp1}]
+    {
+        "type": "MINLP",
+        "specific_type": "NONE",
+        "time": 1000,
+        "sets": {
+            "production_lines": {
+                "description": "The different production lines available at Glueco.",
+                "elements": [
+                    "line_1",
+                    "line_2",
+                    "line_3",
+                    "line_4",
+                    "line_5"
+                ]
+            },
+            "glue_types": {
+                "description": "The different types of glue produced.",
+                "elements": [
+                  "glue_1",
+                  "glue_2",
+                  "glue_3"
+                ]
+            }
+        },
+        "parameters": {
+            "production_rate": {
+                "description": "Units of a specific glue type produced per worker per hour on each production line.",
+                "values": {
+                  "line_1": {
+                    "glue_1": 20,
+                    "glue_2": 30,
+                    "glue_3": 40
+                  },
+                  "line_2": {
+                    "glue_1": 50,
+                    "glue_2": 35,
+                    "glue_3": 45
+                  },
+                  "line_3": {
+                    "glue_1": 30,
+                    "glue_2": 40,
+                    "glue_3": 50
+                  },
+                  "line_4": {
+                    "glue_1": 40,
+                    "glue_2": 45,
+                    "glue_3": 50
+                  },
+                  "line_5": {
+                    "glue_1": 25,
+                    "glue_2": 35,
+                    "glue_3": 45
+                  }
+                }
+            },
+            "min_demand": {
+              "description": "Minimum required units for each type of glue.",
+              "values": {
+                "glue_1": 120,
+                "glue_2": 150,
+                "glue_3": 200
+              }
+            },
+            "total_workers_available": {
+              "description": "Total number of workers available across all production lines.",
+              "value": 80
+            },
+            "max_workers_per_line": {
+              "description": "Maximum number of workers that can be assigned to a single production line.",
+              "value": 20
+            }
+        },
+        "variables": {
+          "time_to_produce": {
+            "description": "The total time (in hours) required to meet the weekly demand.",
+            "type": "real",
+            "domain": {
+              "lower_bound": 0,
+              "upper_bound": null
+            },
+            "index": []
+          },
+          "workers_on_line": {
+            "description": "Number of workers assigned to each production line.",
+            "type": "integer",
+            "domain": {
+              "lower_bound": 0,
+              "upper_bound": 20
+            },
+            "index": [
+              "production_lines"
+            ]
+          }
+        },
+        "constrains": {
+          "total_workers_limit": {
+            "description": "The total number of workers assigned to all production lines cannot exceed the total available workers.",
+            "type": "linear",
+            "expression": "sum_{j in production_lines} workers_on_line[j] <= total_workers_available"
+          },
+          "glue_demand_satisfaction": {
+            "description": "The total production of each glue type must meet its minimum required demand.",
+            "type": "nonlinear",
+            "expression": "sum_{j in production_lines} production_rate[j][g] * workers_on_line[j] * time_to_produce >= min_demand[g] for all g in glue_types"
+          },
+          "line_worker_capacity": {
+            "description": "Each production line can be utilized by a maximum number of workers.",
+            "type": "linear",
+            "expression": "workers_on_line[j] <= max_workers_per_line for all j in production_lines"
+          }
+        },
+        "special_constraints": {},
+        "objective": {
+          "description": "Minimize the total time required to meet the weekly demand for all glue types.",
+          "sense": "minimize",
+          "expression": "time_to_produce"
+        }
+    }
+    
+\end{lstlisting}
+
+
+\subsubsection*{FNP 2:}
+
+\begin{lstlisting}[language=json, caption={Modelo FNP del problema 2.}, label={lst:fnp2}]
+    {
+      "type": "MILP",
+      "specific_type": "NONE",
+      "time": 1000,
+      "sets": {
+        "cities": {
+          "description": "The set of cities in Kilroy County.",
+          "elements": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ]
+        }
+      },
+      "parameters": {
+        "travel_time": {
+          "description": "Time required to travel between cities in Kilroy County (in minutes). travel_time[i][j] is the time from city i to city j.",
+          "values": {
+            "1": {
+              "1": 0,
+              "2": 10,
+              "3": 20,
+              "4": 30,
+              "5": 30,
+              "6": 20
+            },
+            "2": {
+              "1": 10,
+              "2": 0,
+              "3": 25,
+              "4": 35,
+              "5": 20,
+              "6": 10
+            },
+            "3": {
+              "1": 20,
+              "2": 25,
+              "3": 0,
+              "4": 15,
+              "5": 30,
+              "6": 20
+            },
+            "4": {
+              "1": 30,
+              "2": 35,
+              "3": 15,
+              "4": 0,
+              "5": 15,
+              "6": 25
+            },
+            "5": {
+              "1": 30,
+              "2": 20,
+              "3": 30,
+              "4": 15,
+              "5": 0,
+              "6": 14
+            },
+            "6": {
+              "1": 20,
+              "2": 10,
+              "3": 20,
+              "4": 25,
+              "5": 14,
+              "6": 0
+            }
+          }
+        },
+        "max_travel_time": {
+          "description": "The maximum allowed driving time (in minutes) from a city to a fire station for it to be considered covered.",
+          "value": 15
+        }
+      },
+      "variables": {
+        "build_station": {
+          "description": "Binary variable, 1 if a fire station is built in city i, 0 otherwise.",
+          "type": "binary",
+          "domain": {
+            "lower_bound": 0,
+            "upper_bound": 1
+          },
+          "index": [
+            "cities"
+          ]
+        }
+      },
+      "constrains": {
+        "city_coverage": {
+          "description": "Ensures that each city is within the maximum allowed travel time of at least one fire station.",
+          "type": "linear",
+          "expression": "for j in cities: sum_{i in cities | travel_time[i][j] <= max_travel_time} build_station[i] >= 1"
+        }
+      },
+      "special_constraints": {},
+      "objective": {
+        "description": "Minimize the total number of fire stations built.",
+        "sense": "minimize",
+        "expression": "sum_{i in cities} build_station[i]"
+      }
+    }
+\end{lstlisting}
+
+
+
+\section{Arquitectura Multi-Agente}
+En esta sección abordaremos en detalle cada uno de los agentes que componen la arquitectura de la solución propuesta.
+Se profundizará en los roles y tareas de cada agente y como contribuyen a la solución final.
+\subsection{Agente Conversacional}\label{subsec:conv-agent}
+La primera capa de la solución propuesta es un agente encargado de hacer de interfaz lingüística con el usuario. Este agente tiene tres funciones principales:
+\begin{itemize}
+  \item Como primera y principal tarea, se encarga de interactuar con el usuario para obtener una descripción del problema. Al asumir que el usuario puede no poseer conocimientos sobre optimización matemática, existe la posibilidad de que la descripción inicial del problema sea incompleta o ambigua. Por ello, el agente debe ser capaz de identificar posibles lagunas en la información proporcionada y formular preguntas adicionales para aclarar y completar los detalles necesarios del problema.
+  \item Cuando el agente considera que no existe una potencial información faltante en la descripción del problema, se encarga de construir una descripción detallada y refinada del problema a partir de su conversación con el usuario. Además se instruye al agente a modificar la información del problema para hacerla más explícita y entendible. Este proceso incluye la estandarización de las terminologías usadas, incluir cualquier información implícita del problema en la descripción del problema (ej: naturaleza de las variables, restricciones de sentido común, etc).
+  \item Cuando se resuelve el problema de optimización, este agente debe tomar los resultados del problema y elaborar una respuesta en lenguaje natural para el usuario, donde le explique el proceso de solución y los resultados que se obtuvieron.
 \end{itemize}
 
 
-En cada declaración de cláusulas o entidades en esta estructura se mantiene una descripción de la variable en lenguaje natural, con el objetivo de mantener el contexto del problema en la modelación. Un ejemplo completo de esta estructura de modelado puede encontrarse en el anexo \ref{}
+\subsection{Agente Supervisor}
+El agente supervisor es el centro de esta arquitectura, con la tarea de controlar todo el flujo de solución del problema.
+Este flujo se podría describir de la siguiente manera: el agente recibe la descripción ya refinada del problema y ordena al agente de modelación que genere el modelo \textit{FNP}.
+A partir del modelo generado, el agente supervisor analiza las características del problema, en especial su tipo y tamaño.
+Esta información, le permite determinar que vía de solución debe tomar el agente generador de código.
+Una vez que el código es generado el agente supervisor es el encargado de ejecutarlo, y en caso de que se lance un error en tiempo de ejecución, debe proporcionarle retroalimentación al agente de generación de código para que corrija los errores, entrando en un ciclo de corrección hasta que se ejecute correctamente.
+Luego de obtener los resultados, el agente supervisor debe realizar un análisis evaluando la correctitud de estos, lo que le permite decidir si los resultados están listos para devolverlos al usuario, o por el contrario, los resultados no parecen tener sentido y es necesario revisar el modelo.
 
 
-\subsection*{Detalles de implementación}
+\subsection{Agentes de Modelado y Generación de Código}
+Cada uno de estos agentes solo tiene una tarea específica: generar el modelo o el código respectivamente, bajo las instrucciones y configuraciones dictadas por el agente supervisor.
+Además cada uno es responsable de hacer validaciones indispensables sobre la salida que generan, y deben corregir cualquier error encontrado.
+Por ejemplo: el agente de modelado luego de generar el \textit{FNP} del problema debe validar que esté sintácticamente correcto, conteniendo todas las llaves necesarias.
 
 
-\subsubsection{Interfaz gráfica}
-Como parte de la solución se desarrolló una interfaz gráfica web utilizando el framework \textit{Next.js}. Esta interfaz permite al usuario interactuar con la aplicación a través de una conversación, ingresando los detalles del problema y recibiendo retroalimentación.
 
 
 
-\subsubsection{Modelos de lenguaje}
-En el plano de la implementación, se emplearon los Grandes Modelos de Lenguaje (LLM) \textit{Gemini 2.0 Flash} y \textit{Gemini 2.5 Pro}. La selección de estos modelos, desarrollados por Google, se fundamentó en un criterio pragmático: la disponibilidad de una Interfaz de Programación de Aplicaciones (API) con un nivel de acceso gratuito, lo cual fue un factor determinante para la viabilidad del proyecto.
-Estos LLM constituyen el motor computacional de los agentes de modelación y de generación de código. El criterio para emplear un modelo u otro se establece en función de la complejidad de la tarea: el modelo más ágil y económico se asigna a las operaciones de menor dificultad, mientras que el de mayor capacidad se reserva para aquellos procesos que demandan un razonamiento más avanzado.
 
-\subsubsection{Julia}
-Como lenguaje de programación para modelar y resolver el problema se escogió Julia. Un lenguaje de programación de alto rendimiento diseñado para la computación técnica y científica.
-Se escogió este lenguaje por las siguientes ventajas que ofrece:
-\begin{itemize}
-    \item Posee un paquete de modelado de optimización llamado \textit{JuMP}, con una sintaxis declarativa que permiten definir variables y restricciones muy similar a una modelación teórica.
-    \item Integración sencilla con numerosas herramientas de optimización y soluciona-dores (Ipopt, NLopt, Cbc, HiGHS, SCIP, etc) a través de un paquete llamado \textit{MathOptInterface}.
-    \item Compilación Just-In-Time (JIT) sobre LLVM, que proporciona velocidad comparable a C/Fortran en fases de solución y en evaluaciones repetidas de modelos grandes.
-    \item Diferenciación automática integrada (ForwardDiff, ReverseDiff), para obtener gradientes y Hessianas exactas en problemas no lineales sin código manual adicional.
-\end{itemize}
-Dada la amplia gama de problemas que la solución propuesta es capaz de abordar, se ha implementado una arquitectura modular basada en cuatro entornos de ejecución de Julia independientes. El propósito de esta segmentación es aislar las bibliotecas y dependencias específicas para cada categoría de problema, una práctica recomendada para prevenir conflictos e incompatibilidades entre paquetes de software.
-Estos entornos se han especializado de la siguiente manera:
-\begin{itemize}
-    \item Programación Lineal y Entera Mixta: Un entorno dedicado a problemas de Programación Lineal (LP) y Lineal Entera Mixta (MILP).
-    \item Programación no Lineal y Entera Mixta: Un segundo entorno para problemas de Programación no Lineal (NLP) y no Lineal Entera Mixta (MINLP).
-    \item Satisfacción de Restricciones: Un tercer entorno especializado en Problemas de Satisfacción de Restricciones (CS, por sus siglas en inglés, Constraint Satisfaction).
-    \item Metaheurísticas: Finalmente, un cuarto entorno que agrupa un conjunto de herramientas basadas en metaheurísticas. Este último está diseñado para la resolución aproximada y eficiente de problemas de alta complejidad, donde se prioriza la rapidez en la obtención de una solución de alta calidad por sobre la garantía de optimalidad.
-\end{itemize}
 
-\subsection*{Agente Supervisor}
-El Agente Supervisor constituye el núcleo de la arquitectura de la solución propuesta, siendo responsable de la orquestación y ejecución del flujo de trabajo completo. Su función principal es coordinar el proceso, delegando tareas específicas a los agentes subordinados: el Agente de Modelación \textit{fnp} y el Agente de Generación de Código.
-Una vez que el problema ha sido modelado, el Agente Supervisor procede a validar y analizar dicho modelo para identificar sus características clave, tales como el tipo, tamaño y complejidad del problema de optimización. Con base en este análisis, selecciona el conjunto de herramientas y estrategias más adecuadas, decidiendo sobre el solucionador (solver) compatible, el entorno de ejecución óptimo y otros componentes necesarios para la resolución.
-Tras esta fase de planificación, el Agente Supervisor instruye al Agente de Generación de Código para que produzca el código fuente en Julia. La elección de este lenguaje presenta un desafío inherente: al ser relativamente menos popular, los Grandes Modelos de Lenguaje (LLM) tienden a mostrar un rendimiento inferior en la generación de su código, debido a la escasez de datos de entrenamiento disponibles, tal como se menciona en \cite{cassano2024knowledgetransferhighresourcelowresource}. Para mitigar esta desventaja, durante la fase de generación de código se le provee al LLM una serie de ejemplos cuidadosamente diseñados. Se ha desarrollado un conjunto de prompts específicos, cada uno enfocado en demostrar y explicar las diferentes sintaxis para programar componentes del modelo de optimización, como variables, restricciones y funciones objetivo.
-Posteriormente, el Agente Supervisor ejecuta el código generado en el entorno previamente configurado y captura la salida. Esta salida puede corresponder a los resultados del problema o, en su defecto, a un error arrojado durante la ejecución. En caso de error, se inicia un ciclo iterativo de depuración: el Agente Supervisor retroalimenta al Agente de Generación de Código con el mensaje de error, solicitándole que corrija el código para solventar el fallo. Este proceso se repite hasta que el programa se ejecute con éxito o se alcance un número máximo predefinido de intentos.
-El propósito fundamental de este mecanismo de revisión y corrección automatizada es reducir la incidencia de errores derivados de las "alucinaciones" del modelo de lenguaje. Esta estrategia resulta particularmente crucial en el contexto de Julia, un lenguaje donde, como se ha mencionado, el riesgo de que un LLM genere código incorrecto o inexistente es considerablemente mayor.
+
+
+

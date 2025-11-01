@@ -1,0 +1,291 @@
+\chapter{Experimentos y Resultados}\label{chapter:experiments}
+
+
+\section{Diseño de los experimentos}
+Considerando el objetivo central de este trabajo, la evaluación del desempeño del sistema se centrará en su capacidad para resolver problemas prácticos de extremo a extremo.
+El criterio fundamental será validar si la solución logra encontrar un resultado final correcto, partiendo únicamente de la descripción inicial del problema planteado.
+También se evaluó el desempeño de cada uno de los componentes y técnicas utilizadas en la solución: que tanto aportan a la correctitud del resultado final o a diferentes parámetros como la ejecutabilidad y la extracción correcta de los datos del problema.
+
+\subsection{Conjuntos de datos}
+Se seleccionaron varios conjuntos de datos que contienen problemas de optimización formulados en lenguaje natural para la evaluación de la solución propuesta.
+Estos conjuntos de datos fueron seleccionados debido a que son comúnmente utilizados en la literatura estudiada para evaluar soluciones con el mismo objetivo: resolver problemas de optimización a partir de descripciones en lenguaje natural.
+A continuación se presentan los conjuntos de datos seleccionados y una breve descripción de los mismos:
+\begin{itemize}
+      \item \textbf{NLP4LP:} Un conjunto de datos que se introduce en el trabajo presentado por~\cite{ahmaditeshnizi2025optimus03usinglargelanguage}, contiene un total de 241 problemas de optimización. De los cuales 210 son problemas LP y 31 son problemas MILP\@.
+            Los problemas de este conjunto de datos en promedio presentan un longitud en su descripción en lenguaje natural de 536 palabras, tienen en promedio 2 variables, 3 familias de restricciones y 5 parámetros.
+            Cada problema del conjunto contenía además su modelación en \textit{GurobiPy} y los valores óptimos de las variables y la función objetivo para las evaluaciones.
+      \item \textbf{MAMO easy:} En el trabajo de~\cite{huang2025llmsmathematicalmodelingbridging}, se presentan varios \textit{benchmarks} para evaluar las capacidades de los LLMs en la generación de modelos matemáticos, tanto de optimización como ecuaciones diferenciales a partir de descripciones en lenguaje natural.
+            Uno de estos \textit{benchmarks} es el conjunto de datos MAMO easy, que contiene un total de 652 problemas de optimización, de los cuales 640 son problemas MILP y 12 son problemas LP\@. Con una longitud promedio en su descripción de 1045 palabras. Además cada problema cuenta con un aproximado de 3 variables, 4 familias de restricciones y 4 parámetros en promedio.
+            Cada problema contenía solo la solución óptima de la función objetivo, pero no los valores óptimos de las variables.
+      \item \textbf{MAMO complex:} Este es otro conjunto de datos presentado en el mismo trabajo junto a MAMO easy, este set de problemas se considera más complejo y desafiante que los de MAMO easy.
+            Consta de 211 problemas que abarcan temáticas como flujo, enrutamiento, inventario, entre otros. Aunque este conjunto no contiene problemas no lineales, el tamaño de sus problemas es mayor, con un promedio de 32 variables por problema.
+      \item \textbf{Complex OR:} Un conjunto de datos presentado en el trabajo de~\cite{xiao2024chainofexperts}, con una variedad de problemas recopilados de situaciones reales, o de libros de texto de investigación operativa.
+            Este conjunto contiene un total de 18 problemas de optimización, de los cuales 5 son LP y 13 son MILP\@. Con una longitud promedio en su descripción de 1001 palabras, y aproximadamente 5 variables, 10 parámetros y 4 familias de restricciones en promedio.
+      \item \textbf{Opti-Bench:} Este grupo de problemas se presentaron en el trabajo de~\cite{optibench2024}, posee una gran cantidad y variedad de problemas de optimización que simulan situaciones reales.
+            El conjunto de datos contiene un total de 605 problemas, entre ellos 102 son LP, 330 son MILP, 86 son NLP y 85 son MINLP\@. Además algunos de los problemas contienen datos tabulares, simulando escenarios y problemas prácticos.
+            Con una longitud promedio en su descripción de 680 palabras. La cantidad promedio de variables varia en dependencia del tipo problema, teniendo desde 3 para problemas LP hasta 6 para MINLP\@.
+\end{itemize}
+
+Debido a la gran cantidad de problemas en el conjunto de datos \textit{Opti-Bench} y la variedad de tipos de problemas que contiene, se seleccionó como el principal conjunto de datos para la evaluación de la propuesta.
+Otros conjuntos de problemas como \textit{LPWP} presentados en la competencia \textit{NL4Opt} (\cite{ramamonjison2023nl4optcompetitionformulatingoptimization}) no fueron considerados para la evaluación debido a dos motivos.
+El conjunto se construyó con el objetivo de evaluar soluciones que modelaran un problema de optimización, no está diseñado para evaluar soluciones que ejecuten todo el flujo para resolver un problema.
+Además, como se menciona en el trabajo de~\cite{optibench2024} este conjunto esta compuesto de problemas demasiado sencillos para los modelos de lenguaje actuales, debido a que cuando se construyó el conjunto \textit{LPWP} los modelos de lenguaje no tenían capacidades ni remotamente cercanas a las que presentan hoy en días.
+
+
+\subsection{Configuración de los experimentos}
+La evaluación de la propuesta requirió un diseño estructurado para la experimentación, permitiendo la medición ablacionada de cada componente clave de la propuesta.
+Se generó una serie de configuraciones diferentes para evaluar dichos componentes claves, cada configuración depende de una serie de parámetros que representan la activación de cada componente.
+En esta subsección se detalla la metodología utilizada para construir las configuraciones de los experimentos.
+Además se describen una serie de experimentos extras, que evalúan la relevancia de otra serie de técnicas utilizadas en la solución.
+A continuación se muestran los principales parámetros que definen cada configuración de los experimentos:
+\begin{itemize}
+      \item \textbf{Think:} Este parámetro permite seleccionar si usar un modelo más avanzado de razonamiento (\textit{Gemini 2.5 Pro}) o el modelo base (\textit{Gemini 2.5 Flash}).
+      \item \textbf{Reflexive:} Permite activar o desactivar la retroalimentación reflexiva en el agente de modelación.
+      \item \textbf{Transform:} Este parámetro representa si el agente conversacional debe realizar modificaciones en la descripción del problema, con el objetivo de hacerlo más entendible y explícito como se menciona en la subsección~\ref{subsec:conv-agent}.
+\end{itemize}
+
+Debido a la gran cantidad de problemas y a la limitada capacidad de uso de la \textit{API} del modelo \textit{Gemini 2.5 Pro} comparada con la del modelo \textit{Gemini 2.5 Flash}, se decidió solo usar este modelo en el conjunto de datos \textit{Opti-Bench}.
+Sobre este conjunto se ejecutaron 6 rondas de experimentos, en cada ronda se ejecutaron todos los problemas del conjunto con una configuración diferente.
+Estas configuraciones se muestran en la tabla~\ref{tab:configurations}.
+\begin{table}[h]
+      \centering
+      \begin{tabular}{cccc}
+            \toprule
+            \textbf{Ronda} & \textbf{Think} & \textbf{Reflexive} & \textbf{Transform} \\
+            \midrule
+            1              & No             & Si                 & Si                 \\
+            2              & No             & Sí                 & No                 \\
+            3              & No             & No                 & Sí                 \\
+            4              & Sí             & Sí                 & Sí                 \\
+            5              & Sí             & Sí                 & No                 \\
+            6              & Sí             & No                 & Sí                 \\
+            \bottomrule
+      \end{tabular}
+      \caption{Configuraciones de los experimentos sobre el conjunto \textit{Opti-Bench}}
+      \label{tab:configurations}
+\end{table}
+
+Las configuraciones donde todos los parámetros están activados representan la configuración real de la solución propuesta.
+Por otra parte las configuraciones donde existe algún parámetro desactivado permiten evaluar el aporte de ese parámetro a la solución final, en otras palabras se mide que tanto disminuye el rendimiento de la solución al desactivar ese parámetro.
+
+
+
+Para el resto de conjuntos de problemas solo se variaron los parámetros \text{Transform} y \text{Reflexive}, ya que no se usó el modelo \textit{Gemini 2.5 Pro} en estos experimentos. Se realizaron 3 rondas de experimentos sobre cada conjunto, con las configuraciones mostradas en la tabla~\ref{tab:configurations-other}.
+\begin{table}[h]
+      \centering
+      \begin{tabular}{ccc}
+            \toprule
+            \textbf{Ronda} & \textbf{Reflexive} & \textbf{Transform} \\
+            \midrule
+            1              & Si                 & Si                 \\
+            2              & Si                 & No                 \\
+            3              & No                 & Si                 \\
+            \bottomrule
+      \end{tabular}
+      \caption{Configuraciones de los experimentos en el resto de conjuntos}
+      \label{tab:configurations-other}
+\end{table}
+
+
+Se ejecutó además, una serie de experimentos extras para evaluar y comparar otros aspectos más específicos de las técnicas y estrategias utilizadas.
+En primer lugar se realizó una ronda extra de experimentos sobre cada conjunto de datos sin utilizar los \textit{prompts} que daban instrucciones y ejemplos específicos sobre como generar código de \textit{Julia} al agente de generación de código.
+De esta forma se evaluó la efectividad de esta serie de instrucciones y ejemplos en la generación correcta de un código con el que un modelo de lenguaje puede no estar tan familiarizado.
+También se realizaron dos rondas extras sobre el conjunto principal \textit{Opti-Bench}, la primera fue usando un modelo incluso menos potente (\textit{Gemini 2.0 Flash}), y la segunda fue usando \textit{Gemini 2.5 Pro} como optimizador, sin usar la solución propuesta, en otras palabras: se le pidió al modelo directamente que resuelva el problema.
+Esto se hizo con el objetivo de comparar el desempeño de los LLMs por si solos para resolver problemas de optimización en contraste con la solución de un enfoque basado en integrar herramientas externas junto a modelos de lenguaje aunque estos sean menos potentes.
+
+
+
+\subsection{Ejecución y revisión de los experimentos}
+La fase de experimentación se estructuró en dos procesos fundamentales: la ejecución automatizada y validación de los experimentos, y la posterior revisión manual de los resultados obtenidos.
+A continuación, se detalla la metodología implementada en cada etapa, destacando su importancia para asegurar la fiabilidad de los resultados.
+Para la ejecución de cada conjunto de datos se crearon \textit{scripts} utilizando \textit{Python} para automatizar el proceso y poder cambiar fácilmente los parámetros de configuración.
+Dichos \textit{scripts} se encargaban de enviar cada problema a la aplicación y al recibir la respuesta corroborar su correctitud, para luego almacenar los resultados en un archivo \textit{JSON}.
+Verificar la correctitud de cada problema dependía de cada base de datos, en la mayoría solo se contaba con el valor óptimo de la función objetivo, por lo que se consideraba correcto si el valor obtenido por la solución coincidía con el valor óptimo reportado.
+En los conjuntos donde además se contaba con las variables óptimas, estas también debían coincidir para considerar el problema como resuelto correctamente.
+Debido a posibles errores numéricos y la naturaleza de algunos problemas no lineales, se tuvo en cuenta un margen de error de hasta un 0.1\% en los valores de la función objetivo y las variables.
+
+Después de ejecutar los experimentos se realizó una revisión manual sobre los resultados obtenidos de cada problema debido a varios motivos:
+\begin{itemize}
+      \item En algunos problemas, el valor óptimo reportado podría coincidir con el valor óptimo obtenido, sin embargo podría haber discrepancias en las variables.
+            Indicando uno de dos casos: que existen varias combinaciones de valores de las variables que llevan al mismo valor óptimo, o por otro lado, que los valores encontrados incumplen alguna restricción que se modeló incorrectamente.
+      \item En algunos problemas, el valor óptimo reportado podría ser incorrecto.
+      \item Los valores óptimos de variables booleanas podrían aparecer representadas de diferentes formas: como 0 y 1 en algunos casos y como \textit{True} y \textit{False} en otros.
+      \item En los conjuntos de datos que solo contenían el valor óptimo de la función objetivo, existía la posibilidad de que el valor óptimo encontrado coincidiera, pero los valores de las variables encontradas incumplieran alguna restricción que se omitió en la modelación o se modeló incorrectamente
+\end{itemize}
+
+Durante la revisión manual se encontraron varios problemas que presentaban algunas de las situaciones mencionadas anteriormente.
+Para la mayoría de estos casos se modeló el problema de manera manual y se corroboraron los resultados.
+En los problemas que reportaban un valor óptimo incorrecto, se encontró que la mayoría de estos errores se debían a que el problema no presentaba soluciones factibles, pero aún así se reportaba un valor óptimo.
+Esta revisión de los experimentos se realizó con el objetivo de asegurar la precisión de los resultados reportados en este trabajo.
+
+\section{Resultados}
+En esta sección se presentan los resultados obtenidos en los experimentos realizados.
+Primero se muestran los resultados generales de la solución, y se realiza un análisis comparativo con otras soluciones similiares.
+Luego se presentan los resultados obtenidos de las diferentes configuraciones presentadas en la sección anterior.
+Finalmente, se presentan otros resultados y métricas relevantes obtenidas durante la evaluación de la solución propuesta
+
+\subsection{Resultados Generales}
+Se recopiló los resultados presentados por otras soluciones mencionadas en el estado del arte sobre los conjuntos de datos presentados, con el objetivo de realizar una comparación directa con los resultados obtenidos por la propuesta.
+La principal métrica a comparar es la precisión, que representa el porcentaje de problemas resueltos correctamente en base al total de problemas.
+En la mayoría de los conjuntos seleccionados se obtuvieron mejores resultados con respecto a los presentados en el estado del arte, exceptuando solamente el conjunto \textit{MAMO easy}.
+En el resto de los conjuntos, se superó la cantidad de problemas resueltos correctamente por otros trabajos por un margen de al menos un 9\%.
+En la tabla~\ref{tab:general_results} se presenta una comparación más detallada entre los mejores resultados obtenidos por la solución propuesta y los resultados reportados por otros trabajos en cada uno de los conjuntos de datos escogidos.
+
+\begin{table}[h]
+      \centering
+      \makebox[\textwidth]{
+            \begin{tabular}{cccccc}
+                  \toprule
+                                     & \textbf{Opti-bench} & \textbf{NLP4LP} & \textbf{MAMO easy} & \textbf{MAMO complex} & \textbf{Complex OR} \\
+                  \midrule
+                  \textbf{Optim AI}  & 87.4                & 88.1            & \textendash        & \textendash           & \textendash         \\
+                  \midrule
+                  \textbf{Optimus}   & \textendash         & 80.6            & \textendash        & \textendash           & 66.7                \\
+                  \midrule
+                  \textbf{ORLM}      & \textendash         & 72.9            & 82.3               & 37.9                  & \textendash         \\
+                  \midrule
+                  \textbf{LLMOPT}    & \textendash         & 83.8            & \textbf{97.0}      & 68.0                  & 72.7                \\
+                  \midrule
+                  \textbf{CoE}       & \textendash         & 49.2            & \textendash        & \textendash           & 31.4                \\
+                  \midrule
+                  \textbf{Propuesta} & \textbf{96.8}       & \textbf{100}    & 94.6               & \textbf{83.0}         & \textbf{88.8}       \\
+                  \bottomrule
+            \end{tabular}
+      }
+      \caption{Comparación de resultados entre la solución y el estado del arte}
+      \label{tab:general_results}
+\end{table}
+
+
+\subsection{Otros resultados y métricas}
+En la subsección anterior se presentaron los mejores resultados obtenidos por la solución usando la configuración completa.
+En esta subsección se analiza como en algunos casos la configuración usada en la solución varía mucho el rendimiento obtenido.
+En la tabla~\ref{tab:results_different_configs} se muestra inicialmente una comparación de los resultados de variar los parámetros \textit{Reflexive} y \textit{Transform} en diferentes experimentos sobre los conjuntos de datos.
+En estos experimentos se usenó el modelo \textit{Gemini 2.5 Flash}, y se muestran los resultados obtenidos con la solución propuesta, y los resultados obtenidos al desactivar cada uno de los parámetros \textit{Reflexive} y \textit{Transform}.
+
+\begin{table}[h]
+      \centering
+      \begin{tabular}{cccc} % l para las etiquetas, r para los números
+            \toprule
+                                  & \textbf{Propuesta} & \textbf{Sin reflexive} & \textbf{Sin transform} \\
+            \midrule
+            \textbf{Opti-bench}   & 92.01              & 78.1                   & 89.8                   \\
+            \midrule
+            \textbf{NLP4LP}       & 100                & 100                    & 100                    \\
+            \midrule
+            \textbf{MAMO easy}    & 94.6               & 94.0                   & 94.2                   \\
+            \midrule
+            \textbf{MAMO complex} & 83.0               & 75.3                   & 75.8                   \\
+            \midrule
+            \textbf{Complex OR}   & 88.8               & 88.8                   & 88.8                   \\
+            \bottomrule
+      \end{tabular}
+      \caption{Resultados obtenidos al usar diferentes configuraciones en la solución.}
+      \label{tab:results_different_configs}
+\end{table}
+
+
+Como se mencionó anteriormente, en el conjunto de datos \textit{Opti-Bench} se utilizó el cambio de parámetro \textit{Think}.
+Permitiendo así comparar el rendimiento de la solución usando dos modelos de lenguaje con diferentes capacidades (\textit{Gemini 2.5 Flash} y \textit{Gemini 2.5 Pro}).
+En la tabla~\ref{tab:think_experiments} se muestra la comparación entre los resultados obtenidos usando cada uno de estos modelos como base de la solución propuesta.
+Se aprecia una mejora relevante al usar el modelo \textit{Gemini 2.5 Pro} en los resultados de la solución.
+
+\begin{table}[h]
+      \centering
+      \begin{tabular}{cccc}
+            \toprule
+                                      & \textbf{Propuesta} & \textbf{Sin reflexive} & \textbf{Sin transform} \\
+            \midrule
+            \textbf{Gemini 2.5 Flash} & 92.01              & 78.1                   & 89.8                   \\
+            \midrule
+            \textbf{Gemini 2.5 Pro}   & 96.8               & 93.5                   & 94.2                   \\
+            \bottomrule
+      \end{tabular}
+      \caption{Resultados obtenidos en el conjunto de datos \textit{Opti-bench} usando diferentes modelos de lenguaje como base de la solución.}
+      \label{tab:think_experiments}
+\end{table}
+
+
+Además de la precisión, la evaluación de la solución incluyó la medición de otros aspectos relevantes.
+Entre ellos se encuentran la ejecutabilidad del código generado —definida como la cantidad de problemas que se ejecutaron exitosamente sin producir errores antes de alcanzar el límite de ciclos de depuración—, la cantidad de problemas que requirieron ciclos de depuración, y el promedio de ciclos de depuración necesarios por problema.
+Estas métricas no solo proporcionan una medida de la calidad del codigo generado, sino que también se emplearon para validar la efectividad de las instrucciones específicas de \textit{Julia} proporcionadas en los \textit{prompts} al agente de generación de código.
+La Tabla~\ref{tab:code_metrics} detalla una comparativa usando estas métricas de dos experimentos diferentes: uno usando las instrucciones específicas de \textit{Julia} y otro omitiéndolas.
+\begin{table}[h]
+      \centering
+      \makebox[\textwidth]{
+            \begin{tabular}{cccccc}
+                  \toprule
+                                           & \textbf{Opti-bench} & \textbf{MAMO easy} & \textbf{MAMO complex} & \textbf{Complex OR} \\
+                  \midrule
+                  \textbf{Ejecutabilidad}  & 100                 & 100                & 99.1                  & 100                 \\
+                  \midrule
+                  \textbf{Depuración}      & 10                  & 8.4                & 12.7                  & 5.5                 \\
+                  \midrule
+                  \textbf{Ciclos promedio} & 1.73                & 1.4                & 1.9                   & 1.1                 \\
+                  \midrule
+                  \multicolumn{5}{c}{\textbf{Sin instrucciones específicas de Julia}}                                               \\
+                  \midrule
+                  \textbf{Ejecutabilidad}  & 98.0                & 100                & 98.58                 & 100                 \\
+                  \midrule
+                  \textbf{Depuración}      & 17.4                & 8.4                & 14.9                  & 22.2                \\
+                  \midrule
+                  \textbf{Ciclos promedio} & 2.33                & 1.4                & 2.1                   & 1.7                 \\
+                  \bottomrule
+            \end{tabular}
+      }
+      \caption{Resultados adicionales obtenidos con la solución propuesta.}
+      \label{tab:code_metrics}
+\end{table}
+
+
+
+Otra comparación relevante que se realizó fue verificar la capacidad de resolver problemas de optimización de un modelo de lenguaje razonador por si solo, en contraste con la solución propuesta usando un modelo mucho menos potente.
+Como se mencionó anteriormente se escogieron los modelos \textit{Gemini 2.5 Pro} y \textit{Gemini 2.0 Flash} para esta comparación.
+Se obtuvo que la solución propuesta usando el modelo menos potente superó en casi un 4\% la precisión alcanzada con el modelo más avanzado usado como optimizador, específicamente se alcanzó una precisión de un 85.45 y un 88.8 respectivamente.
+
+
+
+\section{Discusión de los resultados}\
+
+Los resultados experimentales expuestos en la sección anterior proporcionan una visión general del desempeño de la solución propuesta.
+Sin embargo, el propósito de esta sección es profundizar en el análisis e interpretación de dichos resultados.
+Que implicaciones tienen los valores obtenidos en los experimentos, y qué conclusiones se pueden extraer sobre la efectividad de las técnicas y estrategias empleadas en este trabajo.
+
+
+En la tabla~\ref{tab:configurations} se observa como en conjuntos como \textit{NLP4LP}, \textit{MAMO easy} y \textit{Complex OR} desactivar alguno de los parámetros no afecta prácticamente el rendimiento de la solución, mostrando una disminución de menos del 1\%.
+Esto podría deberse a que son conjuntos de problemas relativamente más sencillos, por lo que el uso de estas técnicas no es imprescindible para obtener buenos resultados.
+Sin embargo, en conjuntos más complejos como \textit{Opti-Bench} y \textit{MAMO complex} se observa una diferencia considerable al desactivar alguno de los parámetros.
+Entre los dos parámetros analizados, el que representó un mayor impacto según los resultados de los experimentos fue el que activa la retroalimentación reflexiva, mostrando en el conjunto \textit{Opti-Bench} una disminución de casi 14\% en la precisión al desactivar este parámetro durante la ejecución de los experimentos.
+En cuanto a la transformación de la descripción del problema, la disminución que representó en el rendimiento es mucho menor, en comparación con el parámetro \textit{reflexive}.
+Sin embargo en algunos problemas específicos se pudo observar que la transformación de la descripción evitó errores en la identificación de la naturaleza de las variables.
+
+En los experimentos que se muestran en la tabla~\ref{tab:think_experiments} se aprecia como desactivar algún parámetro tiene menos efecto si el modelo de lenguaje es más potente.
+Esto podŕia deberse a que al ser un modelo más potente su cadena de pensamiento es mayor, cubriendo posibles errores que cometería en primer lugar, evitando tener que arreglarlos después en la revisión reflexiva.
+Sin embargo debido al tamaño y complejidad limitadas en los problemas de nuestros conjuntos de datos, no es posible comprobar si al aumentar el tamaño del problema junto al tamaño del modelo de lenguaje los parámetros vuelven a recobrar más influencia en la precisión obtenida.
+
+
+
+
+En términos de ejecutabilidad se determinó que en cada conjunto de problemas se mantuvo prácticamente constante, incluso en ausencia de instrucciones específicas como se aprecia en la tabla~\ref{tab:code_metrics}.
+Las únicas métricas que experimentaron una leve variación fueron la cantidad de problemas que requirieron al menos una iteración de depuración y el promedio de ciclos de corrección necesarios.
+Esta estabilidad en la ejecutabilidad puede atribuirse a la robustez inherente del modelo de lenguaje para arreglar código erróneo a partir de un mensaje de error.
+Pese a que se incrementa el número de depuraciones requeridas, el modelo demuestra ser lo suficientemente potente como para converger en un código ejecutable después de un número limitado de iteraciones.
+Aunque incluso sin las instrucciones específicas de \textit{Julia} la solución puede resolver los problemas, no significa que no sean necesarias, ya que aportan al tiempo de solución y el gasto de recursos de los modelos de lenguaje.
+Así que con estas instrucciones la solución termina siendo más eficiente.
+
+
+La solución propuesta está diseñada como se menciona en capítulos anteriores, para tener en cuenta un tiempo límite establecido por un usuario, permitiendo así cumplir con las necesidades del usuario y resolver el problema en tiempo, o al menos dar una solución factible.
+Sin embargo se decidió que el parámetro de tiempo no era algo a tener en cuenta en la experimentación de la solución.
+Esto se debe al tamaño y dificultad limitada que presentaban los problemas de los conjuntos de datos, cada problema se resolvía en cuestión de pocos segundos, dejando muy poco espacio para experimentar con el parámetro del tiempo en este trabajo.
+
+
+
+
+\subsection{Principales errores}
+El análisis detallado de los resultados permitió identificar los errores más recurrentes cometidos por la solución durante el proceso de resolución de problemas.
+El error principal detectado fue la identificación incorrecta de la naturaleza de las variables.
+Específicamente, en ciertos escenarios, la solución clasificaba erróneamente variables discretas como continuas.
+Este tipo de confusión se observó predominantemente en contextos que involucraban variables relacionadas con alimentos en problemas de nutrición o con hectáreas de tierra en modelos de agricultura.
+Un segundo error, menos frecuente pero también significativo, fue la clasificación incorrecta de una restricción de desigualdad como una restricción de igualdad.
+Estos fallos se manifestaron principalmente en problemas de oferta y demanda.
+La aparición de frases imperativas como ``se debe suplir la demanda de cada lugar'' o ``se planean invertir x cantidad de recursos'' tendía a inducir al modelo a interpretar la condición como una restricción de igualdad estricta, en lugar de una restricción de desigualdad.

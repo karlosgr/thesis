@@ -1,173 +1,13 @@
 \chapter{Estado del Arte}\label{chapter:state-of-the-art}
 
-
-
-
-% \subsection{Marco Teórico}
-
-
-% \subsubsection{Grandes Modelos de Lenguaje}
-% Los grandes modelos de lenguajes (\textit{Large Language Models} o LLMs por sus siglas en inglés) son modelos de aprendizaje automático diseñados para procesar y generar lenguaje natural. Se caracterizan
-% por poseer una gran cantidad de parámetros, generalmente en el orden de los billones, y ser entrenados con enormes volúmenes de datos. El desarrollo de estos modelos se basa en redes neuronales profundas,
-% en particular en la arquitectura \textit{Transformer} presentada por Vaswani et al. en 2017 \cite{vaswani2023attentionneed}. Esta arquitectura se destaca por su capacidad para procesar texto mediante:
-
-% \begin{itemize}
-%     \item \textbf{Representaciones embebidas:} Este proceso consiste en representar las palabras o frasese de un texto en vectores numerícos multidimensionales, capturando el significado de las palabras individuales y sus relaciones contextuales \cite{almeida2023wordembeddingssurvey}.
-%     \item \textbf{Atención multicabezal:} Este mecanismo permite al modelo procesar información de diferentes partes de la secuencia de entrada simultáneamente y desde múltiples "perspectivas" o subespacios de representación \cite{vaswani2023attentionneed}. En lugar de realizar una única función de atención, se ejecutan varias funciones de atención “cabezas” en paralelo. Cada cabeza aprende a enfocarse en diferentes aspectos de la información, y sus salidas se combinan para producir una representación enriquecida. Esto mejora la capacidad del modelo para capturar diversas relaciones y matices en el texto.
-% \end{itemize}
-
-% A pesar de las capacidades de los LLMs generando texto coherente, presentan una serie de dificultades en tareas que demandan razonamientos complejos \cite{naveed2024comprehensiveoverviewlargelanguage}, planificación de tareas o cognición de varios pasos. En general en casi cualquier razonamiento que no fuera explícito y llevara pasos intermedios los LLMs tendían a desempeñarse pobremente \cite{gendron2024largelanguagemodelsstrong}.
-
-
-% AGENTES???
-
-
-% \subsubsection{In-Context Learning}
-% El aprendizaje en contexto (\textit{in-context learning}) se define como un paradigma que permite a los modelos de lenguaje aprender a realizar tareas a partir de unos pocos ejemplos como demostración \cite{dong2024surveyincontextlearning}.
-% En otras palabras la entrada de texto proporcionada al modelo puede condicionar el rendimiento del mismo en tareas específicas, proporcionando instrucciones adicionales o ejemplos de entrada y salida de la tarea en sí. A diferencia de otras técnicas de aprendizaje,
-% el \textit{in-context learning} no ajusta los pesos internos del modelo, solo se aprovecha del conocimiento latente adquirido en el pre-entrenamiento para interpretar los ejemplos e instrucciones del prompt. A continuación mostramos algunas de las metologías usadas dento de este contexto:
-
-% \begin{itemize}
-%     \item \textit{Zero Shot Learning:} En este caso el modelo afronta la tarea sin ver ningún ejemplo de demostración específico en el prompt. Es decir, solo se le da la instrucción o pregunta en lenguaje natural, quizás con algún formato que indique la tarea deseada, pero cero ejemplos explícitos de cómo debería ser la respuesta. Esta configuración pone a prueba la capacidad innata del modelo para generalizar a nuevas tareas a partir de lo que aprendió en pre-entrenamiento, sin apoyo de ejemplos concretos.
-%     \item \textit{Few Shot Learning:} Como su nombre lo indica, este a diferencia del \textit{zero shot} incluye ejemplos de como debería comportarse el modelo. Generalmente se le provee al modelo de algunos ejemplos de entrada-salida que sirven para contextualizar la tarea del modelo. En general, cuantos más  ejemplos diversos y relevantes se incluyan, mejor el modelo entiende la tarea a realizar \cite{brown2020languagemodelsfewshotlearners}. Específicamente dento del \textit{few shot learning}, el caso especial donde solo se provee un ejemplo es denominado \textit{one shot learning}.
-%     \item \textit{Chain of thought:} Esta técnica induce al modelo a generar pasos intermedios en su cadena de razonamiento  \cite{wei2023chainofthoughtpromptingelicitsreasoning}. Mejorando la capacidad del modelo de lidiar con razonamientos complejos o tareas multietapas (matemática, lógica, generación de código, etc). Se demostró que solo agregando frases gatillos como “piensa paso a paso” provocaban que el modelo generara su cadena de razonamiento \cite{kojima2023largelanguagemodelszeroshot}, aumentando la precisión y correctitud de sus respuestas. \textit{Chain of thought} sirvió como paso de entrada a técnicas más avanzadas de razonamiento como \textit{tree of thoughts} \cite{yao2023treethoughtsdeliberateproblem} que permite explorar varias lineas de pensamiento simultáneamente, o \textit{reflexion} \cite{shinn2023reflexionlanguageagentsverbal} donde el modelo analiza y evalua cada uno de los pasos de su línea de razonamiento.
-%     \item \textit{Reflexion:}
-% \end{itemize}
-
-
-% Desde una perspectiva práctica, el \textit{in-context learning} brinda flexibilidad y eficiencia. Evita el costoso proceso de re-entrenar un modelo enorme para cada tarea, mientras puede llegar a alcanzar rendimientos competitivos con los modelos entrenados específicamente. Sin embargo, también es importante destacar que la calidad del \textit{prompt} y de la cantidad y calidad de los ejemplos suministrados
-% influyen enormemente en el rendimiento de la tarea. Asimismo, debe considerarse que los modelos de lenguaje poseen una ventana de contexto limitada, por consiguiente, también restringe la cantidad de ejemplos que pueden procesar eficazmente.
-
-
-
-
-
-% \subsubsection{\textit{Fine-Tunning}}
-% El ajuste fino (\textit{fine-tunning}) se refiere al proceso de adaptar un modelo de aprendizaje pre-entrenado a una tarea o dominio específico mediante un entrenamiento adicional. En el contexto del procesamiento de lenguaje natural, la fase de pre-entrenamiento proporciona
-% un modelo con capacidades lingüísticas y conocimientos generales, y a partir del mismo, mediante \textit{fine-tunning} se pueden generar varios modelos especializados en distintas tareas de lenguaje.
-% Durante el fine-tuning, los pesos del modelo pre-entrenado se ajustan gradualmente usando un conjunto de datos de la tarea específica. Usualmente es un proceso supervisado, es decir se emplean datos etiquetados, aunque también es posible realizar \textit{fine-tunning} no supervisado en algunos contextos \cite{parthasarathy2024ultimateguidefinetuningllms}.
-% Esta estrategia se ha convertido en una práctica ampliamente utilizada para abordar tareas específicas
-% o dominios especializados, pues permite reutilizar un modelo base en lugar de entrenar uno nuevo desde cero \cite{szep2024practicalguidefinetuninglanguage}. Aún así, ajustar un modelo sigue siendo un proceso costoso a nivel de recursos, requiere hardware especializado y un tiempo considerable de entrenamiento. Aunque es más eficiente que entrenar un modelo desde cero, sigue siendo una inversión costosa en infraestructura y energía.
-
-
-% \subsubsection{Modelación de un problema de optimización a partir de lenguaje natural}
-% Dado un problema de optimización \(p\) descrito en lenguaje natural, el modelado de optimización implica construir un modelo matemático \(m\) que conceptualice el problema del mundo real en objetivos y restricciones formales. Completar la solución también conlleva traducir el modelo matemático a un programa \(c\) que utiliza solucionadores eficientes.
-% El objetivo principal es encontrar la solución óptima de un conjunto de opciones factibles, sujeto a ciertas restricciones \cite{huang2025orlmcustomizableframeworktraining}.
-
-
-
-% Los LLMs han sido una herramienta escencial para acortar las distancias entre la ambigüedad y complejidad del lenguaje natural, y la formalidad de los modelos de optimización. Permitiendo numerosas aplicaciones y soluciones que hasta ese momento se consideraban muy difíciles de llevar a cabo.
-% Como la creación de un sistema de asistencia, diseñado para ayudar a comprender e interactuar con modelos formales de optimización complejos \cite{chen2025optichatbridgingoptimizationmodels} o corregir y evaluar código de modelado \cite{chen2023diagnosinginfeasibleoptimizationproblems}, permitiendo a no profesionales interpretar modelos, analizar sus características y modificarlos en caso de ser necesario.
-% También supusieron un gran avance en la idea del “Santo Grial”, como vía efectiva para intentar comprender problemas en lenguaje natural. En este capítulo estaremos exponiendo las técnicas o métodos empleados para solucionar o modelar problemas de optimización a partir de lenguaje natural, las dificultades que se presentan en esta problemática y como se les da solución. También se realizará una comparación entre las técnicas discutidas destacando resultados así como ventajas y desventajas.
-
-% Sin embargo, debido a la complejidad del lenguaje, incluso con herramientas tan poderosas como los LLMS todavía se presentan retos importantes a la hora de comprender un problema de optimización \cite{ahmaditeshnizi2024optimusscalableoptimizationmodeling}.
-% A continuación se muestran los principales problemas expuestos en el estado del arte:
-% \begin{itemize}
-%     \item \textbf{Terminología ambigua:} El lenguaje natural puede llegar a ser ambiguo, existiendo diversas formas de referirse a una misma entidad, o de expresar una idea o información. Esto puede generar dificultades para el modelo de lenguaje a la hora de identificar y extraer la información relevante del problema \cite{ahmaditeshnizi2024optimusscalableoptimizationmodeling}.
-%     \item \textbf{Largas descripciones de problemas:} Los problemas de optimización realistas pueden ser extremadamente largos y complejos, llegando a tener hasta docenas de páginas de extensión. Desafortunadamente, los LLMs tienen un tamaño de contexto limitado, e incluso los modelos con grandes ventanas de contexto se desempeñan peor a medida que el tamaño de la entrada crece \cite{levy2024tasktokensimpactinput}. En consecuencia, los LLM tienden a cometer más errores a medida que aumenta la longitud de la descripción del problema y tienen un bajo rendimiento en problemas complejos.
-%     \item \textbf{Conocimiento implícito:} La descripción del problema podría no contener conocimiento que se considera usualmente de sentido común \cite{ahmaditeshnizi2024optimusscalableoptimizationmodeling}. No es común inlcuir de forma explícita en la descripción de un problema que la cantidad de vehículos no es una variable continua, o que el número de empleados de una empresa no puede ser menor que cero.
-%     \item \textbf{Errores del modelo:} Es conocido que los modelos de lenguaje tienen la capacidad de alucinar, produciendo respuestas aparentemente coherentes pero incorrectas. Sobre todo en el contexto de la generación de código, donde cambios mínimos pueden provocar código erróneo \cite{ahmaditeshnizi2025optimus03usinglargelanguage}.
-%     \item \textbf{Tipo de problema:} El tiempo que se toma para resolver un problema de optimización puede variar en dependencia de la forma de modelar el problema. Por lo tanto el LLM no solo debe generar una modelación correcta sino que además debe ser eficiente dado el tipo del problema \cite{ahmaditeshnizi2025optimus03usinglargelanguage}.
-% \end{itemize}
-
-
-% \subsection*{Enfoques empleados}
-% En el estado del arte, existen dos enfoques principales para resolver, o modelar problemas de optimización a partir de lenguaje natural: \textit{in-context learning} y \textit{fine-tuning}. Ambas se basan en el uso de LLMs, aunque se diferencian en la metodología bajo la cual el modelo aprende a modelar problemas de optimización.
-
-% \subsubsection{\textit{In-context learning}}
-
-% Este enfoque es el más utilizado en las soluciones actuales del estado del arte, utilizando técnicas de \textit{prompting} para mejorar las capacidades del modelo de lenguaje frente a tareas complejas de razonamiento.
-% Técnicas como \textit{chain of thought} se emplean para inducir al modelo a generar pasos intermedios en su cadena de razonamiento \cite{wei2023chainofthoughtpromptingelicitsreasoning}. Permitiendo descomponer la descripción en lenguaje natural en estructuras lógicas: identificar variables, extraer y formular restricciones y objetivos a partir de esas variables.
-% Esto ayuda al modelo a mantener la coherencia dividiendo la tarea en etapas y no omitir detalles implícitos en descripciones complejas.
-% Se utiliza también \textit{few shot prompting} para aumentar la correctitud del modelo en tareas como representar formalmente o generar código de modelado del problema.
-% En estos casos es muy útil ya que son tareas donde pequeñas variaciones en la salida pueden llevar a soluciones incorrectas, por tanto proporcionar un marco de ejemplos de entrada-salida variados y relevantes mejora el desempeño del modelo \cite{brown2020languagemodelsfewshotlearners}.
-
-% \subsubsection{\textit{Fine-tuning}}
-% Esta variante propone aplicar \textit{fine-tuning} a modelos de lenguaje de código abiertos, optando por no depender de LLMs propietarios. Esta opción favorece la privacidad de los datos, que puede llegar a ser un asunto importante en contextos industriales o empresariales \cite{huang2025orlmcustomizableframeworktraining}. Uno de los principales retos en este enfoque es las características requeridas y el tamaño de los datos usados para entrenar al modelo. Esto se debe a que obtener una gran cantidad de problemas de optimización reales, complejos y diversos es muy complicado, ya que las empresas no suelen hacer públicos sus problemas de este campo.
-% Para resolver esta problemática se presentan dos vías en el estado del arte: la primera es partir de una base de datos de descripciones de problemas de optimización diseñados por un grupo de expertos y usar técnicas de \textit{data-augmentation} usando modelos de lenguaje para expandir la base de datos \cite{zhang2024solvinggeneralnaturallanguagedescriptionoptimization}. La segunda es un proceso llamado \textit{OR-instruct}, que se utiliza para generar datos de forma semiautomática \cite{huang2025orlmcustomizableframeworktraining} aplicada a este campo. Ambas vías de generación de datos se centran en cumplir una serie de requisitos llamados \textit{desideratums} \cite{huang2025orlmcustomizableframeworktraining}, que deben satisfacer los problemas de optimización
-% usados para entrenar modelos en esta tarea.
-
-% Con estos datos se entrenan modelos de aproximadamente 7B de parámetros(Mistral-7B, Deepseek-7B-base, LLaMa-3-8B) y se compara su rendimiento generando modelos de optimización \cite{huang2025orlmcustomizableframeworktraining}. A pesar de que algunos trabajos que usan este enfoque se centran en modelar matemáticamente el problema, no necesariamente en resolverlo.
-% Logran resultados significativamente mejores comparado con las alternativas que usan técnicas de prompting como \textit{reflection} o \textit{chain of thought} en LLMs propietarios \cite{huang2025orlmcustomizableframeworktraining}.
-
-
-
-
-% \subsection*{Arquitecturas}
-% En el estado del arte, resolver un problema de optimización a partir de lenguaje natural es un proceso que está compuesto de manera general por una serie de pasos o tareas particulares.
-% A continuación se ilustra un esquema del flujo de general de solución en la figura \ref{fig: general_pipeline}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{general_pipeline.png}
-%     \caption{Flujo general de solución}
-%     \label{fig: general_pipeline}
-
-% \end{figure}
-
-% Algunos autores modelan este flujo usando una arquitectura multi-agente conocida como \textit{chain of experts} \cite{xiao2024chainofexperts}.
-% Donde cada “experto” o agente se especializa en un subdominio concreto, utilizando distintas técnicas del estado del arte para completar su tarea específica.
-% Esta arquitectura permite una mayor modularidad de la solución, así como un fuerte manejo de errores y retroalimentación.
-% Existen a su vez dos variantes de arquitectura multi-agente:
-
-% \begin{itemize}
-%     \item Una cadena de agentes especializados, cada uno encargado de una tarea en particular(modelación, generación de código, validación de resultados). Donde la salida de un agente es la entrada del siguiente \cite{ahmaditeshnizi2024optimusscalableoptimizationmodeling}, modelando así todo el flujo de solución.
-%     \item Un diseño basado en un agente central o “supervisor” que delega tareas a otros agentes especializados y se encarga de validar sus respuestas y tomar decisiones basadas en el estado general del proceso \cite{thind2025optimaioptimizationnaturallanguage}.
-% \end{itemize}
-
-% En la práctica se ha demostrado que el desempeño de la arquitectura \textit{chain of experts} modelando problemas de optimización supera por un amplio margen al uso de técnicas como \textit{chain of thought}, \textit{tree of thought}, o \textit{reflection} en LLMs \cite{xiao2024chainofexperts} por si solas.
-
-
-
-% \subsection*{Modelación}
-% Es posible representar un problema de optimización utilizando lenguajes intermedios, definidos por gramáticas formales diseñadas específicamente para este propósito [17]. Sin embargo,lo más habitual es recurrir a una modelación matemática mediante fórmulas escritas en LaTeX [18]. Esta preferencia se debe, principalmente,
-% al limitado conocimiento que poseen los modelos de lenguaje (LLMs) sobre dichos lenguajes intermedios, en contraste con su familiaridad con lenguajes ampliamente utilizados como LaTeX. La utilización de lenguajes formales para la modelación ofrece, además, mecanismos de validación del modelo; por ejemplo, el análisis
-% sintáctico (parsing) de las expresiones del objetivo y las restricciones permite verificar si se trata de fórmulas válidas. Existen también enfoques que combinan expresiones matemáticas con metadatos [18], lo que permite conservar el contexto de las cláusulas y registrar información general del problema. Otra alternativa consiste
-% en modelar directamente el problema mediante código, utilizando algún lenguaje de modelado específico.
-
-
-
-
-
-% \subsection*{Todavia por nombrar}
-
-
-% Trabajos como \textbf{OptiMUS} \cite{ahmaditeshnizi2025optimus03usinglargelanguage} se presentan técnicas muy interesantes en cada agente del modelo. Por ejemplo se implementa una extracción y modelación de las cláusulas y variables mediante grafos, manteniendo un vínculo entre ellas. Esto permite mantener una relación entre el lenguaje natural, la modelación formal y el código generado para cada variable, restricción u objetivo.
-% Resolviendo parcialmente la caída del rendimiento de los LLMs en problemas complejos a medida que aumenta el contexto \cite{levy2024tasktokensimpactinput}. Esta técnica le permite no solo aumentar el tamaño del contexto que es posible manejar, sino que además facilita la retroalimentación y el manejo de errores retrospectivo.
-% Su agente de genración de código no solo utiliza técnicas de \textit{reflection} para corregir y validar código, sino que además busca optimizar el proceso de solución del problema identificando estructuras especiales que puedan explotarse en el problema \cite{ahmaditeshnizi2025optimus03usinglargelanguage}. Sin embargo este trabajo solo se centra en la solución de problemas de programación entera y lineal.
-
-
-% Otro trabajo que presenta una arquitectura interesante es \textbf{OptimAI} \cite{thind2025optimaioptimizationnaturallanguage}, que utiliza un sistema con un agente central, centrado en la planificación y el control. Este trabajo introduce una serie de mecanismos que le permite resolver distintos tipos de problemas usando distintas herramientas. Modelando distintas vías de solución del problema después de analizarlo, y decidiendo un orden para ejecutarlas. Esto ha demostrado gran efectividad a la hora de atacar problemas grandes y complejos.
-
-% \begin{itemize}
-%     \item \textbf{Cobertura Exhaustiva:} El conjunto de datos debería cubrir: 1) escenarios diversos tales como la optimización de la cadena de suministro, la programación (planificación), la gestión de inventario y la logística de transporte; 2) diferentes tipos de problemas como la programación lineal, la programación entera y la programación entera mixta; y 3) niveles de dificultad variables (fácil, intermedio, difícil). Con una cobertura exhaustiva, se esperaría diversidad a nivel de problema-solución, abarcando dinámicas del entorno, diversidad lingüística y variabilidad de soluciones,
-%     \item \textbf{Adaptabilidad al Entorno:} En entornos industriales reales, los objetivos y las restricciones de los problemas a menudo cambian debido a modificaciones en los objetivos empresariales, las condiciones del mercado o la disponibilidad de recursos. Es fundamental que el conjunto de datos incluya casos que reflejen estos cambios dinámicos.
-%     \item \textbf{Diversidad Lingüística:} Los problemas descritos en lenguaje natural a menudo presentan diferente sintaxis, ambigüedades y complejidades. Por ejemplo, un problema podría mencionar "cantidad de productos" mientras que otro se refiere a "número de artículos en venta". Incluir esta diversidad lingüística en el conjunto de datos podría mejorar la capacidad del modelo para comprender descripciones variadas.
-%     \item \textbf{Variabilidad de Soluciones:} Para algunos problemas desafiantes, puede haber múltiples técnicas de modelado, tales como linealizar un problema no lineal mediante la introducción de variables auxiliares. Incluir esta variedad en el conjunto de datos permite al modelo aprender diferentes técnicas y enfoques de modelado.
-% \end{itemize}
-
-
-% Cabe destacar que este enfoque y el de modelación multiagentes no son excluyentes, ya que cada agente podría ser entrenado con datos para su tarea específica. Sin embargo como hemos mencionado anteriormente, el \textit{fine-tunning} es un proceso costoso a nivel de recursos y tiempo, como consecuencia este enfoque no es el más común a emplear.
-
-% Todo el proceso, desde la descripción del problema en lenguaje natural, hasta obtener la respuesta generalmente se expone en los siguientes pasos:
-% \begin{itemize}
-
-%     \item \textbf{Extracción de la información relevante:} Se procesa la información en lenguaje natural, identificando expresiones o entidades claves, como restricciones, variables y objetivos.
-%     \item \textbf{Modelación formal del problema:} Usando la información del problema se modela de manera formal.
-%     \item \textbf{Generación de código:} A partir de la modelación formal del problema, se genera un código ejecutable donde se implementa la modelación del problema.
-%     \item \textbf{Ejecución y retroalimentación}: En esta fase se ejecuta el código generado, y ante cualquier error o comportamiento inesperado el modelo inspecciona el mensaje de error generado y modificar el código generado.
-% \end{itemize}
-
-
-
 \section{Modelado de Optimización}
-%TODO mejorar
-En la literatura analizada se pueden identificar dos aspectos importantes en la creación de un modelo de optimización a partir de lenguaje natural.
-El primer aspecto está referido a la identificación y extracción de la información y características relevantes a partir de la descripción del problema para generar el modelo.
-El segundo está referido a que estructura y tipo de modelación se seleccionan para representar formalmente el problema.
-Estos dos aspectos serán abordados en esta sección a partir de los diferentes referentes teóricos encontrados en las literatura relacionada.
+El análisis de la literatura revela que la creación de modelos de optimización a partir de lenguaje natural se centra en dos desafíos conceptuales principales.
+El primero es la Extracción Semántica y de Características, que implica la identificación precisa de la información y las restricciones a partir de la descripción textual.
+El segundo es la Selección del Paradigma de Modelación, que se refiere a la elección de la estructura y el tipo de representación formal (matemática) del problema.
+Ambos pilares serán abordados detalladamente en esta sección, utilizando los marcos teóricos de la investigación relacionada.
 
-\subsection{Variantes de Modelado(titulo por revisar)}
+
+\subsection{Enfoques de Modelado}
 La competencia \textit{NL4Opt} (\cite{ramamonjison2023nl4optcompetitionformulatingoptimization}) fue creada con el objetivo de explorar diferentes técnicas para modelar matemáticamente un problema de optimización lineal a partir de una descripción en lenguaje natural.
 Para realizar este proceso, en esta competencia se propone una metodología basada en dos sub-tareas principales. La primera de ellas es \textit{Named Entity Recognition} (NER), la cual consiste en etiquetar las entidades fundamentales en la descripción del problema: restricciones, variables, objetivos, etc.
 La segunda sub-tarea es modelar el problema a partir del texto etiquetado, usando una representación intermedia (IR) basada en etiquetas \textit{XML}.
@@ -175,12 +15,12 @@ Para la realización de ambas tareas se propone el uso de modelos como \textit{B
 
 
 
-En los trabajos presentados por \cite{ning2023novelapproachautoformulationoptimization} y \cite{highlightingnamedentities} se sigue la metodología propuesta en \textit{NL4Opt} para la modelación a partir de lenguaje natural, aunque el segundo artículo solo se enfoca en la segunda sub-tarea.
-En el trabajo de \cite{ning2023novelapproachautoformulationoptimization} se utiliza XLM-R como modelo base para el reconocimiento y etiquetado de entidades. A este se le aplica además \textit{fine-tuning} adoptando un entrenamiento adversarial para mejorar la capacidad de generalización del modelo.
+En los trabajos presentados por~\cite{ning2023novelapproachautoformulationoptimization} y~\cite{highlightingnamedentities} se sigue la metodología propuesta en \textit{NL4Opt} para la modelación a partir de lenguaje natural, aunque el segundo artículo solo se enfoca en la segunda sub-tarea.
+En el trabajo de~\cite{ning2023novelapproachautoformulationoptimization} se utiliza XLM-R como modelo base para el reconocimiento y etiquetado de entidades. A este se le aplica además ajuste fino (\textit{fine-tuning}) adoptando un entrenamiento adversarial para mejorar la capacidad de generalización del modelo.
 Los autores también presentan una serie de reglas para realizar un post-procesamiento del texto etiquetado.
 Para la segunda sub-tarea ambos trabajos emplean diferentes versiones de \textit{BERT} para transformar el texto etiquetado en la representación intermedia en un solo paso.
 Ambos trabajos lograron buenos resultados al evaluarse de forma \textit{end to end} en el conjunto de problemas presentados en \textit{NL4Opt}.
-Sin embargo, estos resultados contrastan con los publicados por \cite{ramamonjison2023nl4optcompetitionformulatingoptimization} quienes realizan una comparación de la eficacia entre las mejores soluciones siguiendo la metodología presentada en la competencia y las capacidades de un gran modelo de languaje como \textit{ChatGPT} para resolver la misma tarea.
+Sin embargo, estos resultados contrastan con los publicados por~\cite{ramamonjison2023nl4optcompetitionformulatingoptimization} quienes realizan una comparación de la eficacia entre las mejores soluciones siguiendo la metodología presentada en la competencia y las capacidades de un gran modelo de languaje como \textit{ChatGPT} para resolver la misma tarea.
 Se utilizó \textit{ChatGPT-3.5-turbo} y se llegó a la conclusión de que este modelo superó a dichas soluciones sin necesidad de \textit{fine-tuning} ni un etiquetado previo de entidades.
 
 
@@ -256,16 +96,20 @@ En este estudio se afirma que el uso de esta re-presentación resulta en una for
 Esto se concluye al comparar el rendimiento de un modelo de lenguaje para modelar un conjunto de problemas de optimización alternando entre estas dos variantes.
 
 \section{Enfoques de Solución}
+Habiendo abordado en la sección anterior que técnicas y estrategias se usan para modelar un problema de optimización a partir de lenguaje natural, se pretende exponer en esta sección cómo encontrar una solución al problema de forma directa.
+Se exploran dos caminos de solución fundamentales: por un lado, el uso de LLMs para generar el código y el modelo formal que herramientas externas o solvers se encargan de optimizar; y por otro, el uso del LLM como el propio motor de optimización, capaz de inferir la solución sin necesidad de intermediarios.
 
 \subsection{Integración Modelos - Herramientas Externas}
 En la literatura consultada, el enfoque más utlizado para resolver directamente un problema de optimización, a partir de su descripción en lenguaje natural fue una estrategia que consta de dos pasos.
-Primero se modela el problema usando diferentes técnicas abordadas en la sección anterior, luego a partir de esa modelación formal se genera y ejecuta código específico, empleando herramientas y \textit{solvers} externos.
+Primero se modela el problema usando diferentes técnicas abordadas en la sección anterior, luego a partir de esa modelación formal se genera y ejecuta código específico, empleando herramientas o solucionadores (\textit{solvers}) externos.
 Esta estrategia puede ilustrarse de forma general como se muestra en la Figura \ref{fig: pipeline}
 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1.0 \textwidth]{pipeline.png}
+    \makebox[\textwidth]{
+        \includegraphics[width=1.2 \textwidth]{pipeline.png}
+    }
     \caption{Estrategia general de solución}
     \label{fig: pipeline}
 \end{figure}
@@ -283,10 +127,10 @@ Esto permite capturar errores en la solución que no dependen de un código inco
 Trabajos como \textit{OptimAI} (\cite{thind2025optimaioptimizationnaturallanguage}) incluyen además una etapa de planificación entre los pasos de modelación y generación-ejecución de código.
 En esta etapa se realiza un análisis de las características del problema y los \textit{solvers} disponibles con el objetivo de maquetar distintas vias de solución, además de permitir escoger un \textit{solver} adecuado para el problema.
 Además implementan un mecanismo de decisión que permite cambiar entre estrategias teniendo en cuenta cuantas iteraciones de depuración se han realizado.
-Este trabajo, a diferencia de otros que solo se enfocan en resolver problemas de programación lineal (LP) o programación entera mixta (MILP), puede manejar un amplio rango de problemas combinando una gran cantidad de \textit{solver} y herramientas.
+Este trabajo, a diferencia de otros que solo se enfocan en resolver problemas de programación lineal (LP) o programación entera mixta (MILP), puede manejar un amplio rango de problemas combinando diferentes \textit{solver} y herramientas.
 
 \subsection{LLMs como Optimizadores}
-En el trabajo de \cite{yang2024largelanguagemodelsoptimizers} se introduce \textit{Optimization by PROmpting} (OPRO), un enfoque que emplea los grandes modelos de lenguaje
+En el trabajo de~\cite{yang2024largelanguagemodelsoptimizers} se introduce \textit{Optimization by PROmpting} (OPRO), un enfoque que emplea los grandes modelos de lenguaje
 como optimizadores. Esta metodología aprovecha tanto la capacidad de los LLM para procesar lenguaje natural como su habilidad para el aprendizaje en contexto, especialmente, para inferir
 patrones a partir de ejemplos (\cite{mirchandani2023largelanguagemodelsgeneral}).
 El objetivo es lograr que el modelo de lenguaje genere directamente candidatos a soluciones de un problema de optimización.
@@ -301,10 +145,14 @@ No obstante, el estudio también identifica limitaciones significativas. Entre e
 lo que puede conducir al estancamiento en la búsqueda de soluciones de alta calidad.
 Finalmente, se concluye que este enfoque aún no supera en rendimiento a los algoritmos y \textit{solvers} especializados existentes.
 
-Otros trabajos como los publicados por \cite{huang2024exploringtruepotentialevaluating} y \cite{guo2024optimizinglargelanguagemodels} también evaluan a los grandes modelos de lenguaje como optimizadores, aunque presentan pequeños cambios en su metodología con respecto a OPRO. Entre las modificaciones podemos mencionar la exploración de las capacidades del modelo de encontrar soluciones nuevas siguiendo estrategias como \textit{Grid Search}, \textit{Gradient Descent} o \textit{Hill Climbing}.
+Otros trabajos como los publicados por~\cite{huang2024exploringtruepotentialevaluating} y \cite{guo2024optimizinglargelanguagemodels} también evaluan a los grandes modelos de lenguaje como optimizadores, aunque presentan pequeños cambios en su metodología con respecto a OPRO. Entre las modificaciones podemos mencionar la exploración de las capacidades del modelo de encontrar soluciones nuevas siguiendo estrategias como \textit{Grid Search}, \textit{Gradient Descent} o \textit{Hill Climbing}.
 Ambos trabajos llegan a conclusiones similares a las alcanzadas por \cite{yang2024largelanguagemodelsoptimizers}, destacando el potencial de los LLMs para resolver eficientemente instancias pequeñas de problemas conocidos de optimización.
 Sin embargo también plantean que su eficacia decrece ampliamente al escalar el tamaño y complejidad de los problemas, dificultando su aplicación en la práctica.
 
 \section{Análisis General}
+El estudio de la literatura evidencia un consenso claro en la utilidad de los Grandes Modelos de Lenguaje sobre otros métodos para la modelación de problemas de optimización.
+Se identifican dos enfoques principales para entrenar a un LLM en la tarea de modelación, con un balance importante: el \textit{fine-tuning} ofrece mejor rendimiento, pero a expensas de un alto costo computacional y la dependencia de datos escasos; mientras que \textit{in-context learning} es más viable y generalizable, logrando alta eficacia mediante arquitecturas de agentes complejas y técnicas avanzadas como la reflexión.
+Paralelamente, la estrategia de solución más robusta se centra en una arquitectura dual: el modelo de lenguaje se encarga del modelado, y solvers externos especializados ejecutan el código, utilizando mecanismos de retroalimentación y depuración para corregir los errores en tiempo de ejecución.
+También es importante tener en cuenta que no se ha explorado completamente el potencial de los nuevos modelos “razonado-res” en esta tarea de solución y modelación de problemas de optimización, lo cual representa un tema relevante en el que indagar.
 
-\newpage
+
