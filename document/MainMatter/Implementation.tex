@@ -2,7 +2,7 @@
 
 
 \section{Infraestructura}
-Para la solución propuesta se implementó un servidor usando \textit{FastApi}, un framework que permite crear aplicaciones web de forma sencilla y rápida usando \textit{Python}.
+Para la solución propuesta se implementó un servidor usando \textit{FastApi}, un \textit{framework} que permite crear aplicaciones web de forma sencilla y rápida usando \textit{Python}.
 Este servidor se montó en un contenedor de \textit{Docker} junto a los entornos y paquetes necesarios para que la aplicación funcione.
 Garantizando así la portabilidad y facilidad de despliegue de la solución.
 
@@ -28,14 +28,14 @@ Estos entornos se han especializado de la siguiente manera:
 No se incluyeron otras herramientas o paquetes como \textit{Gurobi} o \textit{CPLEX} porque a pesar de ser más eficientes y con mayor rendimiento, son herramientas propietarias que requieren licencias de pago.
 
 \subsection{Entorno de Python}
-Como se mencionó anteriormente, el servidor principal de la aplicación está desarrollado en \textit{Python} utilizando el framework \textit{FastApi}.
+Como se mencionó anteriormente, el servidor principal de la aplicación está desarrollado en \textit{Python} utilizando el \textit{framework} \textit{FastApi}.
 Pero además, en la aplicación se utilizan otras bibliotecas de Python que son imprescindibles para la solución propuesta.
 Entre ellas se encuentran: \textit{google-genai} que es la encargada de interactuar con los modelos de lenguaje y \textit{or-tools}.
 Esta última es una biblioteca desarrollada por Google, que proporciona herramientas para resolver problemas de optimización complejos específicos como enrutamiento y planificación.
 Se añadió al proyecto como una alternativa para resolver este conjunto de problemas por vías no exactas de manera eficiente.
 
 \subsection{Interfaz gráfica}
-Como parte de la solución se desarrolló una interfaz gráfica web utilizando el framework \textit{Next.js}.
+Como parte de la solución se desarrolló una interfaz gráfica web utilizando el \textit{framework} \textit{Next.js}.
 Esto permite al usuario interactuar con la aplicación a través de una interfaz tipo chat, que facilita el intercambio de información necesario para obtener la definición del problema de optimización.
 
 \subsection{Modelos de lenguaje}

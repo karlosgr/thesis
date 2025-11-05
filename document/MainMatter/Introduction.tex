@@ -1,41 +1,36 @@
 \chapter*{Introducción}\label{chapter:introduction}
 \addcontentsline{toc}{chapter}{Introducción}
 % Optimization background and history
-La optimización ha sido una disciplina clave en muchos campos de la ciencia y la ingeniería a lo largo de la historia. Desde hace muchos años,
-la idea de maximizar o minimizar ha sido fundamental en el cálculo y la física, no estaba formalmente consolidada. Sus primeros usos para resolver problemas prácticos
-en la epóca moderna fueron durante la Segunda Guerra Mundial, donde se utilizó para
-resolver asuntos de logística y planificación militar, dando origen a la investigación operativa (\textit{Operation Research}, en inglés) \cite{Petropoulos_2023}.
-La investigación operativa integraba matemáticas, estadística y experimentación para optimizar operaciones militares, y fue pionera en usar métodos cuantitativos
-para la toma de decisiones óptimas en organizaciones. Tomando inspiración en procesos naturales, aleatorios o en el comportamiento humano, surgieron los algoritmos metaheurísticos.
-Estos algoritmos dieron lugar a nuevos métodos para resolver problemas de optimización, alcanzando soluciones aproximadas al óptimo en tiempos mucho menores \cite{Tomar2023metaheuristics}.
-Este avance significó un gran salto en la capacidad de resolver problemas complejos y reales, que hasta ese momento eran intratables por los métodos exactos.
-
-
+La optimización ha sido una disciplina clave en numerosos campos de la ciencia y la ingeniería a lo largo de la historia.
+Aunque la idea de maximizar o minimizar una función ha sido fundamental en el cálculo y la física desde sus inicios, la optimización no se consolidó como una disciplina formal hasta épocas más recientes.
+Sus primeras aplicaciones prácticas a gran escala surgieron durante la Segunda Guerra Mundial para resolver asuntos de logística y planificación militar, dando origen a la investigación de operaciones (Operation Research, en inglés)~(\cite{Petropoulos_2023}).
+Este campo integraba matemáticas, estadística y experimentación para optimizar operaciones militares y fue pionero en el uso de métodos cuantitativos para la toma de decisiones en organizaciones.
+Posteriormente, la inspiración en procesos naturales, aleatorios o en el comportamiento humano dio lugar a los algoritmos metaheurísticos.
+Estos métodos ofrecieron nuevas vías para resolver problemas de optimización, permitiendo alcanzar soluciones aproximadas al óptimo en tiempos de cómputo considerablemente menores~(\cite{Tomar2023metaheuristics}).
+Este avance representó un salto cualitativo en la capacidad de resolver problemas complejos del mundo real que, hasta ese momento, eran intratables con métodos exactos.
 % Growing interest in optimization in recent years and machine learning influence
-Dada la relevancia actual de los problemas de optimización, el interés por este campo se ha desarrollado considerablemente en los últimos años. Un estudio reveló que en los últimos 30 años la cantidad de investigaciones, árticulos y
-avances importantes relacionados con este tema se ha incrementado exponencialmente \cite{weinand2021research}. El surgimiento del \textit{machine learning} como herramienta para abordar problemas complejos y de alta dimensionalidad
-fue un factor clave en el campo de la optimización. La estrecha relación entre estos dos campos ha sido un factor clave en este desarrollo. Los métodos de aprendizaje han logrado modelar relaciones complejas, expandiendo
-significativamente el espectro de problemas de optimización que pueden resolverse \cite{bengio2020machinelearningcombinatorialoptimization}.
-
+Dada la relevancia de los problemas de optimización, el interés en este campo ha crecido considerablemente.
+Un estudio revela que, en las últimas tres décadas, la producción científica relacionada con este tema —incluyendo investigaciones, artículos y avances importantes— se ha incrementado de forma exponencial~(\cite{weinand2021research}).
+El surgimiento del machine learning como herramienta para abordar problemas complejos y de alta dimensionalidad ha sido un catalizador fundamental en este desarrollo.
+Los métodos de aprendizaje automático han demostrado ser capaces de modelar relaciones complejas, expandiendo significativamente el espectro de problemas de optimización que pueden resolverse~\cite{bengio2020machinelearningcombinatorialoptimization}.
 % Solving optimization problems nowadays
-En la actualidad existen una gran cantidad de herramientas y softwares para resolver problemas de optimización. Cada una enfocada en resolver uno o varios de los tipos de problemas
-de optimización existentes (programación lineal, programación entera, programación no lineal, optimización robusta y adaptiva, etc). Estas herramientas son lo suficientemente avanzadas y eficientes para manejar problemas relativamente grandes
-y complejos en tiempos razonables. En la actualidad resolver problemas de optimización complejos consta de tres pasos \cite{zhang2024solvinggeneralnaturallanguagedescriptionoptimization}. Primero un
-experto en el dominio del problema debe analizar los requerimientos y objetivos prácticos, convirtiendolos en una descripción formal del problema. Después se extrae la información relevante de la descripción y se representa en alguno de los lenguajes
-de modelado existentes, como \textit{Python}, \textit{AMPL}, \textit{Julia}, etc. Finalmente se usan las herramientas anterioremente mencionadas para alcanzar la solución final.
-
+Actualmente, existe una gran cantidad de herramientas y programas de software para resolver problemas de optimización.
+Cada una de estas herramientas se especializa en uno o varios tipos de problemas existentes (programación lineal, entera, no lineal, optimización robusta, etc.).
+Han alcanzado un nivel de avance y eficiencia que les permite manejar problemas relativamente grandes y complejos en tiempos razonables.
+Hoy en día, la resolución de un problema de optimización complejo consta de tres pasos fundamentales~(\cite{zhang2024solvinggeneralnaturallanguagedescriptionoptimization}).
+Primero, un experto en el dominio del problema debe analizar los requerimientos y objetivos prácticos, convirtiéndolos en una descripción formal.
+Después, se extrae la información relevante de dicha descripción y se representa en un lenguaje de modelado, como Python, AMPL o Julia.
+Finalmente, se utilizan las herramientas de software mencionadas anteriormente para obtener la solución.
 % The LLM usage in optimizations problems
+La ambición de reducir la brecha entre el lenguaje natural y el modelado algebraico o algorítmico de un computador no es nueva.
+De hecho, ya en 1996, Eugene C. Freuder describió la idea de que “el usuario especifique el problema y el ordenador lo resuelva” como el “Santo Grial” de la programación de restricciones~(\cite{tsouros2023holygrail20natural}).
+Los primeros intentos para alcanzar este objetivo se manifestaron en sistemas expertos que buscaban asistir en la interacción con modelos matemáticos usando lenguaje natural~(\cite{Dantzig1951}).
+Sin embargo, debido a su inherente complejidad, el avance en el procesamiento del lenguaje natural fue un proceso lento.
+Aunque hasta hace relativamente poco se habían logrado progresos notables en tareas como la traducción de textos, el análisis sintáctico y el reconocimiento de entidades, la capacidad de analizar un problema complejo con su contexto, ambigüedades e ideas implícitas parecía una meta lejana.
 
-Desde hace mucho tiempo ha existido un gran interés en reducir la brecha que hay entre el lenguaje natural y el modelado algebraíco o algorítmico de una computadora.
-De hecho, en 1996, Eugene C. Freuder describió la idea de que “el usuario especifique el problema y el ordenador lo resuelva” como el “Santo Grial” de la programación de restricciones \cite{tsouros2023holygrail20natural}.
-Hace algunos años se dieron pequeños pasos persiguiendo este objetivo, como sistemas expertos que intentaban asistir en el entendimiento e interacción de un modelo matemático usando lenguaje natural \cite{Dantzig1951}.
-Sin embargo el avance en el procesamiento y entendimiento del lenguaje natural ha sido un proceso lento debido a su complejidad. Hasta hace pocos años tareas como traducción de textos, análisis sintáctico de oraciones y el
-reconocimiento de entidades habían progresado bastante llegando a obtener buenos resultados. Pero todavía analizar un problema complejo, que tiene contexto, ambiguedades e ideas implícitas parecía algo lejano. A partir del año 2018
-aparecieron los modelos de lenguaje preentrenados (\textit{pre-trained language models}, en inglés) como \textit{BERT} y \textit{GPT-2} que lograron un desempeño sobresalientes en tareas de procesamiento y generación de lenguaje. Estos modelos fueron escalando en tamaño
-hasta llegar a los \textit{Large Language Models} (LLM). Al aumentar el número de parámetros y el tamaño del corpus de entrenamiento, estos modelos no solo escalaron en sus capacidades para entender, generar y manipular textos, sino que desarrollaron “habilidades” que los modelos
-más pequeños no presentaban \cite{zhao2025surveylargelanguagemodels}. Dichas “habilidades” hacen referencia a un aumento en el desempeño al utilizar técnicas de \textit{prompting} como \textit{in-context learning} y \textit{few-shots}.
-
-
+A partir de 2018, la aparición de los modelos de lenguaje preentrenados (pre-trained language models, en inglés) como BERT y GPT-2 supuso un cambio de paradigma, logrando un desempeño sobresaliente en tareas de procesamiento y generación de lenguaje.
+Estos modelos fueron escalando en tamaño hasta convertirse en los hoy conocidos como Large Language Models (LLM). Al aumentar el número de parámetros y el tamaño de sus corpus de entrenamiento, estos modelos no solo mejoraron sus capacidades para entender, generar y manipular textos, sino que también desarrollaron «habilidades emergentes» que los modelos más pequeños no presentaban~(\cite{zhao2025surveylargelanguagemodels}).
+Estas habilidades se manifiestan como una mejora drástica en el desempeño al emplear técnicas de prompting, tales como in-context learning y few-shot learning.
 \newpage
 
 \subsection*{Problema}
@@ -50,7 +45,7 @@ a una modelación formal.
 
 Este proceso es generalmente costoso en cuestiones de tiempo y recursos, así como demandar la intervención de profesionales con experiencia. Debido a esto existe una barrera entre empresas, negocios o
 instituciones, que no cuentan con recursos o personal experto en este campo, y la posibilidad de acceder a las tecnologías de optimización. Siendo este acceso un aspecto
-significativo para facilitar la toma de decisiones, mejorar la eficiencia de sus procesos y solucionar próblematicas complejas.
+significativo para facilitar la toma de decisiones, mejorar la eficiencia de sus procesos y solucionar problemáticas complejas.
 
 
 \subsection*{Motivación}
@@ -70,7 +65,7 @@ la interacción y la extracción de datos de los complejos cuadros tabulares inc
 \subsection*{Objetivos}
 
 El objetivo general de este trabajo es el diseño e implementación de una propuesta de solución al problema planteado.
-Una solución que no dependa de conocimientos en optimización por parte del usuario, y que tampoco necesite que el problema esté modalado formalmente para resolverlo.
+Una solución que no dependa de conocimientos en optimización por parte del usuario, y que tampoco necesite que el problema esté modelado formalmente para resolverlo.
 Por lo tanto se propone como objetivo que la solución trabaje con la forma más natural y simple de un problema: su descripción en lenguaje natural.
 La propuesta de solución debe ser capaz de extraer la información relevante a partir de la descripción de un problema: objetivos, restricciones, variables, etc. Usando esa información para modelar formalmente el problema y resolverlo de forma automática.
 Para cumplir con este objetivo general, se plantean los siguientes objetivos específicos:

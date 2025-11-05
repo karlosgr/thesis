@@ -27,7 +27,7 @@ Se utilizó \textit{ChatGPT-3.5-turbo} y se llegó a la conclusión de que este 
 
 %% Prompting
 
-Analizando la literatua estudiada posterior a los trabajos antes mencionados, es posible deducir que la metodología propuesta en \textit{NL4Opt} resultó mucho menos eficaz que otros enfoques basados en grandes modelos de lenguaje.
+Analizando la literatura estudiada posterior a los trabajos antes mencionados, es posible deducir que la metodología propuesta en \textit{NL4Opt} resultó mucho menos eficaz que otros enfoques basados en grandes modelos de lenguaje.
 Es posible que tanto las conclusiones presentadas por \cite{ramamonjison2023nl4optcompetitionformulatingoptimization}, así como la acelerada evolución de las capacidades de los LLM en los últimos años (\cite{chen2025surveyscalinglargelanguage}) hayan contribuido a descontinuar la metodología presentada en \textit{NL4Opt} y a utilizar grandes modelos de lenguaje.
 
 En general la mayoría de los estudios y artículos consultados optan por utilizar LLMs para la modelación a partir de lenguaje natural.
@@ -91,16 +91,16 @@ A continuación se presenta una caracterización de las diferentes opciones de m
     \item Modelación usando formatos específicos como \textit{JSON} (\cite{thind2025optimaioptimizationnaturallanguage}, \cite{ahmaditeshnizi2023optimusoptimizationmodelingusing}), el uso formatos como \textit{JSON} permite estructurar la modelación de manera formal y organizada. De esta forma permite representar no solo la modelación matemática, sino también el contexto y características de cada cláusula y variable, así como los metadatos del problema.
 \end{itemize}
 
-Generalmente, cualquier problema de optimización se puede modelar matemáticamente usando variables, restricciones y objetivos. Sin embargo, en el trabajo de \cite{jiang2025llmopt} se presenta una formulación de cinco elementos: conjuntos, parámetros, variables, restricciones y objetivo.
+Generalmente, cualquier problema de optimización se puede modelar matemáticamente usando variables, restricciones y objetivos. Sin embargo, en el trabajo de~\cite{jiang2025llmopt} se presenta una formulación de cinco elementos: conjuntos, parámetros, variables, restricciones y objetivo.
 En este estudio se afirma que el uso de esta re-presentación resulta en una formulación mas precisa del problema, favoreciendo la legibilidad y comprensión del modelo. Se demuestra además, que la formulación de cinco elementos es más facil de entender y generar por un LLM que la modelación matemática.
 Esto se concluye al comparar el rendimiento de un modelo de lenguaje para modelar un conjunto de problemas de optimización alternando entre estas dos variantes.
 
 \section{Enfoques de Solución}
-Habiendo abordado en la sección anterior que técnicas y estrategias se usan para modelar un problema de optimización a partir de lenguaje natural, se pretende exponer en esta sección cómo encontrar una solución al problema de forma directa.
+En la sección anterior se abordó sobre que técnicas y estrategias se usan para modelar un problema de optimización a partir de lenguaje natural, en esta sección se pretende exponer cómo encontrar una solución al problema de forma directa.
 Se exploran dos caminos de solución fundamentales: por un lado, el uso de LLMs para generar el código y el modelo formal que herramientas externas o solvers se encargan de optimizar; y por otro, el uso del LLM como el propio motor de optimización, capaz de inferir la solución sin necesidad de intermediarios.
 
 \subsection{Integración Modelos - Herramientas Externas}
-En la literatura consultada, el enfoque más utlizado para resolver directamente un problema de optimización, a partir de su descripción en lenguaje natural fue una estrategia que consta de dos pasos.
+En la literatura consultada, el enfoque más utilizado para resolver directamente un problema de optimización, a partir de su descripción en lenguaje natural fue una estrategia que consta de dos pasos.
 Primero se modela el problema usando diferentes técnicas abordadas en la sección anterior, luego a partir de esa modelación formal se genera y ejecuta código específico, empleando herramientas o solucionadores (\textit{solvers}) externos.
 Esta estrategia puede ilustrarse de forma general como se muestra en la Figura \ref{fig: pipeline}
 
@@ -114,12 +114,10 @@ Esta estrategia puede ilustrarse de forma general como se muestra en la Figura \
     \label{fig: pipeline}
 \end{figure}
 
-En base a que las estrategias de modelado ya se abordaron en la sección anterior, esta subsección se centrará en analizar los enfoques empleados para resolver un problema de optimización a partir de una modelación formal.
-
-Una estrategia fundamental, identificada en diversos trabajos de investigación, es el proceso de depuración o \textit{debugging} (\cite{ahmaditeshnizi2025optimus03usinglargelanguage}, \cite{zhang2024solvinggeneralnaturallanguagedescriptionoptimization}, \cite{jiang2025llmopt}, \cite{huang2025orlmcustomizableframeworktraining}, \cite{thind2025optimaioptimizationnaturallanguage}).
-Una vez que los \textit{solvers} y herramientas externas ejecutan el código de modelado generado, es posible que estas lancen errores, debido a sintaxis incorrecta en el código o problemas ocurridos en tiempo de ejecución.
+Una estrategia fundamental, identificada en diversos trabajos de investigación, es el proceso de depuración o \textit{debugging} (\cite{ahmaditeshnizi2025optimus03usinglargelanguage},~\cite{zhang2024solvinggeneralnaturallanguagedescriptionoptimization}, \cite{jiang2025llmopt}, \cite{huang2025orlmcustomizableframeworktraining}, \cite{thind2025optimaioptimizationnaturallanguage}).
+Una vez que los \textit{solvers} y herramientas externas ejecutan el código de modelado generado, es posible que estas lancen errores, debido a una sintaxis incorrecta en el código o a problemas ocurridos en tiempo de ejecución.
 Estos errores se capturan y se utilizan como retroalimentación, permitiendo refinar y corregir el código generado inicialmente.
-Esta estrategia ayuda a corregir alucionaciones producidas por los modelos de lenguaje en la generación de código, así como manejar situaciones inesperadas en la ejecución.
+Esta estrategia ayuda a corregir alucinaciones producidas por los modelos de lenguaje en la generación de código, así como manejar situaciones inesperadas en la ejecución.
 
 Otra técnica bastante empleada es el análisis cualitativo de los resultados. Dada la solución hallada por el \textit{solver} se le realiza una consulta a un modelo de lenguaje, donde se le pide analizar si los resultados obtenidos tienen sentido dado el problema inicial.
 Esto permite capturar errores en la solución que no dependen de un código incorrecto, sino de un modelo mal traducido a código o mal generado. A partir de la retroalimentación del modelo es posible intentar corregir el problema, independientemente si es un problema del paso de modelación o del paso de ejecución.
@@ -140,7 +138,7 @@ Este conjunto de soluciones poseen un puntaje asociado, y están ordenadas de fo
 Una vez que el LLM propone una serie de soluciones nuevas, un módulo evaluador califica esas soluciones y las añade al \textit{meta-prompt} para la siguiente iteración.
 
 La eficacia del método OPRO fue evaluada en dos problemas de optimización clásicos: la regresión lineal y el problema del viajante, o como se conoce en inglés: \textit{the traveling salesman problem} (TSP).
-En instancias de pequeña escala, el enfoque obtiene resultados prometedores, demostrando así la capacidad de los LLMs para abordar funciones objetivo diversas utilizando únicamente prompts.
+En instancias de pequeña escala, el enfoque obtiene resultados prometedores, demostrando así la capacidad de los LLMs para abordar funciones objetivo diversas utilizando únicamente \textit{prompts}.
 No obstante, el estudio también identifica limitaciones significativas. Entre ellas destacan la dificultad para escalar a problemas de mayor tamaño debido al límite de la ventana de contexto, y una menor eficacia al tratar con funciones objetivo complejas o grandes cantidades de variables,
 lo que puede conducir al estancamiento en la búsqueda de soluciones de alta calidad.
 Finalmente, se concluye que este enfoque aún no supera en rendimiento a los algoritmos y \textit{solvers} especializados existentes.
